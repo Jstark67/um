@@ -1,5 +1,5 @@
 #
-# Makefile for the UM
+# Makefile for the UM Test lab
 # 
 CC = gcc
 
@@ -8,13 +8,12 @@ CFLAGS  = -g -std=gnu99 -Wall -Wextra -Werror -pedantic $(IFLAGS)
 LDFLAGS = -g -L/comp/40/build/lib -L/usr/sup/cii40/lib64
 LDLIBS  = -l40locality -lcii40 -lm -lbitpack
 
-EXECS   = um
+EXECS   = writetests
 
 all: $(EXECS)
 
-um: um.o  #umemory.o uexecute.o uinterprate.o
+writetests: umlabwrite.o umlab.o
 	$(CC) $(LDFLAGS) $^ -o $@ $(LDLIBS)
-
 
 # To get *any* .o file, compile its .c file with the following rule.
 %.o: %.c
@@ -22,3 +21,4 @@ um: um.o  #umemory.o uexecute.o uinterprate.o
 
 clean:
 	rm -f $(EXECS)  *.o
+
