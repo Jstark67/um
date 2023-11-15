@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <uarray.h>
 //#include <>
 
 typedef enum Um_opcode {
@@ -8,6 +9,10 @@ typedef enum Um_opcode {
         NAND, HALT, ACTIVATE, INACTIVATE, OUT, IN, LOADP, LV
 } Um_opcode;
 
+UArray_T read_code(FILE *fp)
+{
+        return 1;
+}
 
 int main(int argc, char* argv[])
 {
