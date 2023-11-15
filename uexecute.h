@@ -5,5 +5,8 @@
 #include <uarray.h>
 #include <assert.h>
 
+void printC(){
+        printf("hello uexecute\n");
+}
 
 #endif
