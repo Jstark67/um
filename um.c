@@ -37,47 +37,48 @@ UArray_T read_code(FILE *fp)
         return program;
 }
 
+// void callExe(Mem_T mem,uint32_t curInst)
+// {
+//         uint32_t opcode, value, *ra,*rb,*rc;
+
+// } not thought through;
+
 void printArr(UArray_T a)
 {
         for (int i = 0; i < UArray_length(a); i++) {
                 uint32_t *cur_code = UArray_at(a, i);
-                // printf("code is %d at line %d\n",*cur_code,i );
                 (void)cur_code;
         }
         
 }
 int main(int argc, char* argv[])
 {
-        printA();
-        printB();
-        printC();
+
 
         
         /*initialize with input*/
-        int i;
-        UArray_T arr; 
-        for (i = 0; i < argc; i++){
-                if (argc - i > 2) {
-                        fprintf(stderr, "Usage: %s [filename]\n", argv[0]);
-                        exit(1);
-                }
-                printf("%d,%d\n",i,argc);
+        UArray_T program; 
+        if (argc > 2) {
+                fprintf(stderr, "Usage: %s [filename]\n", argv[0]);
+                exit(1);
         }
-        assert(argc - i <= 1);    /* at most one file on command line */
-        printf("i: %d, argc: %d\n", i, argc);
-     
-        if (i == argc) {
+
+        if (argc == 2) {
                 FILE *fp = fopen(argv[i - 1], "r");
                 assert(fp != NULL);
-                printf("fuckme\n");
-                
-                arr = read_code(fp);
+                program = read_code(fp);
                 fclose(fp);
         } else {
-                arr = read_code(stdin);
+                program = read_code(stdin);
         }
-        printf("size: %u\n", UArray_length(arr));
-        printArr(arr);
+        Mem_T mem = mem_init(program);
+        mem_free(mem);
+
+        int i;
+        for (i = 0; i < count; i++)
+        {
+                break;
+        }
         
-        UArray_free(&arr);
+
 }
