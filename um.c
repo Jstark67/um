@@ -5,7 +5,8 @@
 
 #include "uinterprate.h"
 #include "umemory.h"
-#include "uexecute.h"
+
+// #include "uexecute.h"
 
 //#include <>
 
@@ -72,6 +73,8 @@ int main(int argc, char* argv[])
                 program = read_code(stdin);
         }
         Mem_T mem = mem_init(program);
+        assert(Seq_get(mem->seg_mem, 0) == program);
+        umemory_map_unmap_test(mem);
         mem_free(&mem);
 
         // int i;
