@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
         }
 
         if (argc == 2) {
-                FILE *fp = fopen(argv[i - 1], "r");
+                FILE *fp = fopen(argv[1], "r");
                 assert(fp != NULL);
                 program = read_code(fp);
                 fclose(fp);
@@ -72,13 +72,13 @@ int main(int argc, char* argv[])
                 program = read_code(stdin);
         }
         Mem_T mem = mem_init(program);
-        mem_free(mem);
+        mem_free(&mem);
 
-        int i;
-        for (i = 0; i < count; i++)
-        {
-                break;
-        }
+        // int i;
+        // for (i = 0; i < count; i++)
+        // {
+        //         break;
+        // }
         
 
 }

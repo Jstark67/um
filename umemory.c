@@ -1,24 +1,23 @@
-#ifndef UMEM_H
-#define UMEM_H
-
 #include <seq.h>
 #include <uarray.h>
 #include <assert.h>
 #include <stdio.h>
 #include "umemory.h"
+#include <stdlib.h>
 
 const int HINT = 0;
 
-typedef struct Mem_T {
+struct Mem_T {
         Seq_T seg_mem;
         Seq_T unmapped;
         uint32_t maxID;
-} *Mem_T
+};
 
 /* mem_init
  * Initialize a Mem_T object and populate m[0] through the inputted program instructions
  * Params: Uarray_T of uint32_ts that stores program instructions
- * Return: a Mem_T object, with m[0] substantiated
+ * Return: 
+ *      - a Mem_T object, with m[0] substantiated
  * Expectation: CRE will occur if the initialization of Hanson sequences failed, which would be handled by Hanson’s exception mechanisms
 */
 
@@ -41,8 +40,10 @@ Mem_T mem_init(UArray_T program)
 
 /* mem_free
  * Free a Mem_T struct and all its segments
- * Params: address of the em_T object oto be freed * Return: a Mem_T object, with m[0] substantiated
- * Expectation: CRE if address or segment itself is null
+ * Params: 
+ *      - address of the mem_T object to be freed 
+ * Return: a Mem_T object, with m[0] substantiated
+ * Expectation: CRE if address or segments itself is null
 */
 void mem_free(Mem_T *mem)
 {       
@@ -52,8 +53,9 @@ void mem_free(Mem_T *mem)
 
         /* remove every virtual memory segment */  
         for(int i = 0; i < Seq_length((*mem)->seg_mem); i++){
-                if (Seq_at((*mem)->seg_mem, i) != NULL) {
-                        UArray_free(&((*mem)->seg_mem));
+                UArray_T cur = Seq_get((*mem)->seg_mem, i);
+                if (cur != NULL) {
+                        UArray_free(&cur);
                 }
         }
 
@@ -62,3 +64,4 @@ void mem_free(Mem_T *mem)
         Seq_free(&(*mem)->unmapped);
         free(mem);
 }
+
