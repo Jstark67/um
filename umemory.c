@@ -128,3 +128,17 @@ void umemory_map_unmap_test(Mem_T mem)
         
         // mem_unmap(mem, unmap_id); /* Should fail the program */
 }
+
+uint32_t mem_load(Mem_T mem, uint32_t memi, uint32_t segi)
+{
+        UArray_T segment = Seq_get(mem->seg_mem, memi);
+        return (uint32_t)(uintptr_t)UArray_at(segment, segi);
+}
+
+
+void mem_store(Mem_T mem, uint32_t memi, uint32_t segi,uint32_t value)
+{
+        UArray_T segment = Seq_get(mem->seg_mem, memi);
+        *(uint32_t *)UArray_at(segment, segi) = value;
+}
+
