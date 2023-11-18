@@ -1,4 +1,5 @@
 #include "uinterprate.h"
+#include "bitpack.h"
 
 const int OP_MASK = 0xF0000000;
 const int RA_MASK = 0x000001c0;
@@ -14,11 +15,9 @@ Return: the opcode as int
 Expects the opcode to be in range [0,13]
 Note: CRE if out of range
 */
-int Getopcode(uint32_t inst)
+uint32_t getOpcode(uint32_t inst)
 {
-        int rtn = (inst & OP_MASK)>>28;
-        assert(rtn >= 0 && rtn < 14);
-        return rtn;
+        return Bitpack_getu(inst,4,28);
 }
 /*
 setReg:
@@ -29,9 +28,9 @@ Return: none
 */
 void setRef(uint32_t inst, uint32_t *ra,uint32_t *rb,uint32_t *rc)
 {
-        *ra = (inst & RA_MASK) >> 6;
-        *rb = (inst & RB_MASK) >> 3;
-        *rc = inst & RC_MASK;
+        *ra = Bitpack_getu(inst,3,6);
+        *rb = Bitpack_getu(inst,3,3);
+        *rc = Bitpack_getu(inst,3,0);
 }
 /*
 
@@ -44,6 +43,6 @@ Note: CRE if out of range or register null
 */
 uint32_t setLoad(uint32_t inst, uint32_t *ra)
 {
-        *ra = (inst & LV_MASK) >> 25;
-        return inst & VAL_MASK;
+        *ra = Bitpack_getu(inst,3,25);
+        return Bitpack_getu(inst,25,0);
 }

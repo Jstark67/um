@@ -12,11 +12,13 @@ EXECS   = um
 
 all: $(EXECS)
 
-um: um.o  umemory.o #uexecute.o uinterprate.o
+um: um.o  umemory.o uexecute.o uinterprate.o bitpack.o
 	$(CC) $(LDFLAGS) $^ -o $@ $(LDLIBS)
 
 
 # To get *any* .o file, compile its .c file with the following rule.
+uexecute.o: uexecute.c umemory.o
+	$(CC) $(CFLAGS) -c $< -o $@
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 

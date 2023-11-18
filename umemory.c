@@ -51,8 +51,6 @@ void mem_free(Mem_T *mem)
         /* assure thatt virtual memory was allocated before freeing */
         assert(mem != NULL && *mem != NULL && (*mem)->seg_mem != NULL
                && (*mem)->unmapped != NULL);
-        printf("fuck1\n");
-
         /* remove every virtual memory segment */  
         for(int i = 0; i < Seq_length((*mem)->seg_mem); i++){
                 UArray_T cur = Seq_get((*mem)->seg_mem, i);
@@ -60,14 +58,13 @@ void mem_free(Mem_T *mem)
                         UArray_free(&cur);
                 }
         }
-        printf("fuck2\n");
         /* remove the two sequences and the entire memory struct */  
         Seq_free(&(*mem)->seg_mem);
         Seq_free(&(*mem)->unmapped);
-        printf("fuck3\n");
         free(*mem);
     
 }
+
 
 uint32_t mem_map(uint32_t length, Mem_T mem)
 {
@@ -98,36 +95,7 @@ void mem_unmap(Mem_T mem, uint32_t idx)
         UArray_free(&unmapped_seg);
 }
 
-/* Tests the basic functionalities of map and unmap, will require more tests since this is just a prototype */
-void umemory_map_unmap_test(Mem_T mem)
-{
-        /* check whether mapping returns consecutive ids and allocated correct space*/
-        uint32_t id;
-        uint32_t size = 64; /* random number to test with */
-        printf("work1\n");
-        for (unsigned i = 0; i < 1000; i++) {
-                id = mem_map(size, mem);
-                assert(id == i + 1);
-                assert(UArray_length(Seq_get(mem->seg_mem, id)) == (int)size);
-        }
-        printf("work2\n");
-        /* call unmap with an invalid id */
-        // uint32_t unmap_id = 114514;
-        
-        /* unmap a segment in the middle and call map again, check whether the two segment indices are the same */
 
-        for (uint32_t i = 250; i < 500; i++) {
-                printf("work3\n");
-                mem_unmap(mem, i);
-                id = mem_map(size, mem);
-                printf("index 1: %u, index 2: %u\n", i, id);
-                
-                assert(i == id);
-        }
-        
-        
-        // mem_unmap(mem, unmap_id); /* Should fail the program */
-}
 
 uint32_t mem_load(Mem_T mem, uint32_t memi, uint32_t segi)
 {
@@ -142,3 +110,19 @@ void mem_store(Mem_T mem, uint32_t memi, uint32_t segi,uint32_t value)
         *(uint32_t *)UArray_at(segment, segi) = value;
 }
 
+
+
+int mem_loadP(Mem_T mem, uint32_t idx)
+{
+        UArray_T old = Seq_get(mem->seg_mem, 0);
+        UArray_T new = Seq_get(mem->seg_mem, idx);
+        uint32_t length = UArray_length(new);
+        UArray_free(&old);
+        Seq_put(mem->seg_mem, 0, UArray_copy(new, length));
+        return length;
+}
+
+uint32_t mem_inst(Mem_T mem, int line)
+{
+        return (uint32_t)(uintptr_t)UArray_at(Seq_get(mem->seg_mem, 0), line);
+}

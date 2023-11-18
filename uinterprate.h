@@ -26,7 +26,7 @@ Return: uint32 value
 Expects: instruction has valid opcode 13, register pointer not null
 Note: CRE if out of range or register null
 */
-int Getopcode(uint32_t inst);
+uint32_t getOpcode(uint32_t inst);
 void setRef(uint32_t inst, uint32_t *ra,uint32_t *rb,uint32_t *rc);
 uint32_t setLoad(uint32_t inst, uint32_t *ra);
 
