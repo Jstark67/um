@@ -28,7 +28,7 @@ UArray_T read_code(FILE *fp)
 {
         fseek(fp,0,SEEK_END);
 
-        int length = ftell(fp) / CMD_SIZE;
+        int length = ftell(fp) /CMD_SIZE;
         assert(ftell(fp) != 0);
 
         rewind(fp);
@@ -50,9 +50,8 @@ void callExe(Machine mach, int *line,  int *curP)
 {
         uint32_t inst, opcode, value, a, b, c, *ra,*rb,*rc;
         inst = mem_inst(mach->mem, *line);
-        printf("inst = %u\n",inst);
         opcode = getOpcode(inst);
-        printf("opcode = %u\n",opcode);
+        //printf("opcode = %u\n",opcode);
         if (opcode < LV){
                 setRef(inst,&a,&b,&c);
                 ra = &mach->reg[a];
@@ -138,9 +137,7 @@ int main(int argc, char* argv[])
                 mach->mem = mem_init(read_code(stdin));
         }
 
-        umemory_map_unmap_test(mach->mem);
         umemory_load_store_test(mach->mem);
-
         /*execution cycle*/
         int i;
         int curP = UArray_length(Seq_get(mach->mem->seg_mem, 0));

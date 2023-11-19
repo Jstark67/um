@@ -125,7 +125,7 @@ uint32_t mem_loadP(Mem_T mem, uint32_t idx)
 
 uint32_t mem_inst(Mem_T mem, int line)
 {
-        return (uint32_t)(uintptr_t)UArray_at(Seq_get(mem->seg_mem, 0), line);
+        return *(uint32_t *)UArray_at(Seq_get(mem->seg_mem, 0), line);
 }
 
 void umemory_map_unmap_test(Mem_T mem)
@@ -157,6 +157,7 @@ void umemory_load_store_test(Mem_T mem)
         UArray_T cur_program = Seq_get(mem->seg_mem, 0);
         /* assuming 10 consecutive slots in memory has been mapped */
         for (uint32_t i = 1; i <= 10; i++) {
+                mem_map(size, mem);
                 for (uint32_t j = 0; j < size; j++) {
                         /* test whether value stored by umemory_store can be fetched by
                         umemory_load independently */
