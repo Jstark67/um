@@ -28,7 +28,7 @@ UArray_T read_code(FILE *fp)
 {
         fseek(fp,0,SEEK_END);
 
-        int length = ftell(fp) /CMD_SIZE;
+        int length = ftell(fp) / CMD_SIZE;
         assert(ftell(fp) != 0);
 
         rewind(fp);
@@ -137,6 +137,9 @@ int main(int argc, char* argv[])
         } else {
                 mach->mem = mem_init(read_code(stdin));
         }
+
+        umemory_map_unmap_test(mach->mem);
+        umemory_load_store_test(mach->mem);
 
         /*execution cycle*/
         int i;
