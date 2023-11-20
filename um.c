@@ -41,12 +41,16 @@ UArray_T read_code(FILE *fp)
                 }
                 uint32_t *cur_code = UArray_at(program, i);
                 *cur_code = code;
-         }
+        }
         
         return program;
 }
-
-void callExe(Machine mach, int *line,  int *curP)
+void halt_exit(Machine *mach)
+{
+        free(*mach);
+        exit(0);
+}
+void callExe(Machine mach, uint32_t *line,  uint32_t *curP)
 {
         uint32_t inst, opcode, value, a, b, c, *ra,*rb,*rc;
         inst = mem_inst(mach->mem, *line);
@@ -65,36 +69,52 @@ void callExe(Machine mach, int *line,  int *curP)
         }
         
         if (opcode == CMOV){
+                // printf("CMOV\n");
                 move(ra,rb,rc);
         } else if (opcode == SLOAD){
+                // printf("SLOAD\n");
                 segL(mach->mem,ra,rb,rc);
         } else if (opcode == SSTORE){
+                // printf("SSTORE\n");
                 segS(mach->mem,ra,rb,rc);
         } else if (opcode == ADD){
+                // printf("ADD\n");
                 add(ra,rb,rc);
         } else if (opcode == MUL){
+                // printf("MUL\n");
                 mult(ra,rb,rc);
         } else if (opcode == DIV){
+                // printf("DIV\n");
                 divide(ra,rb,rc);
         } else if (opcode == NAND){
+                // printf("NAND\n");
                 nand(ra,rb,rc);
         } else if (opcode == HALT){
+                // printf("HALT\n");
                 halt(&mach->mem);
+                halt_exit(&mach);
         } else if (opcode == ACTIVATE){
+                // printf("ACTIVATE\n");
                 map(mach->mem,rb,rc);
         } else if (opcode == INACTIVATE){
+                // printf("INACTIVATE\n");
                 unmap(mach->mem,rc);
         } else if (opcode == OUT){
+                // printf("OUT\n");
                 out(rc);
         } else if (opcode == IN){
+                // printf("IN\n");
                 in(rc);
         } else if (opcode == LOADP){
-                if(*rb == 0) *line = *rc;
-                else {
+                // printf("LOADP\n");
+                if (*rb == 0) {
+                        *line = *rc - 1;
+                } else {
                         *line = *rc - 1; /*-1 to handle i++; sok since signed*/
                         *curP = loadP(mach->mem,rb);
                 }
         } else if (opcode == LV){
+                // printf("LV\n");
                 lv(value,rc);
         } 
         
@@ -123,7 +143,7 @@ int main(int argc, char* argv[])
         Machine mach = malloc(sizeof(*mach));
         assert(mach != NULL);
 
-        for (int i = 0; i < NUM_REG; i++){
+        for (uint32_t i = 0; i < NUM_REG; i++){
                 mach->reg[i] = 0;
         }
 
@@ -137,11 +157,12 @@ int main(int argc, char* argv[])
                 mach->mem = mem_init(read_code(stdin));
         }
 
-        umemory_load_store_test(mach->mem);
+        // umemory_load_store_test(mach->mem);
         /*execution cycle*/
-        int i;
-        int curP = UArray_length(Seq_get(mach->mem->seg_mem, 0));
+        uint32_t i;
+        uint32_t curP = UArray_length(Seq_get(mach->mem->seg_mem, 0));
         for (i = 0; i < curP; i++) {
+                // printf("%u\n", i);
                 callExe(mach,&i,&curP);
         }
         mem_free(&mach->mem);

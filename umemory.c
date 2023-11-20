@@ -68,6 +68,7 @@ void mem_free(Mem_T *mem)
 
 uint32_t mem_map(uint32_t length, Mem_T mem)
 {
+        assert(length > 0);
         UArray_T Segment = UArray_new(length, unit_size);
         int unmapped_num = Seq_length(mem->unmapped);
         uint32_t idx;

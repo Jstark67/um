@@ -32,7 +32,6 @@ void nand(uint32_t *ra, uint32_t *rb, uint32_t *rc)
 void halt(Mem_T *mem)
 {
         mem_free(mem);
-        exit(0);
 }
 void map(Mem_T mem, uint32_t *rb, uint32_t *rc)
 {
