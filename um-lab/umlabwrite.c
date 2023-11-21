@@ -47,13 +47,17 @@ static struct test_info {
         {"test_halt_verbose", NULL, "", test_halt_verbose},
         {"test_out", NULL, "Hello\n", test_out},
         {"test_add", NULL, "6\n", test_add},
-        {"test_mult", NULL, "0à\n", test_mult},
+        {"test_mult", NULL, "0p\n", test_mult},
         {"test_add_edge", NULL, "0\n", test_add_edge},
         {"test_div", NULL, "0\n", test_div},
         {"test_mov", NULL, "01\n", test_mov},
         {"test_nand", NULL, "01\n", test_nand},
-        {"test_segl", NULL, "V\n", test_segl},
+        {"test_segl", NULL, "", test_segl},
+        {"test_segs", NULL, "V\n", test_segs},
         {"test_in", "HELLO", "HELLO\n", test_in},
+        {"test_map", NULL, "2\n", test_map},
+        {"test_loadp", NULL, "", test_loadp},
+        {"test_unmap", NULL, "", test_unmap}
 };
 
   

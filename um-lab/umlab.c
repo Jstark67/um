@@ -197,6 +197,8 @@ void test_mult(Seq_T stream)
         append(stream, loadval(r1, 0x1111112));
         append(stream, loadval(r2, 240));
         append(stream, mul(r3, r1, r2));
+        append(stream, loadval(r2, 2));
+        append(stream, divide(r3, r3, r2));
         append(stream, output(r3));
         append(stream, loadval(r0, '\n'));
         append(stream, output(r0));
@@ -322,6 +324,8 @@ void test_loadp(Seq_T stream)
         append(stream, loadval(r2, 50));
         append(stream, map(r2, r2));
         append(stream, loadval(r3, 31));
-        
-
+        append(stream, loadval(r4, 2));
+        append(stream, segl(r5, r5,r4));
+        append(stream, segs(r2, r3,r5));
+        append(stream, loadP(r2, r3));
 }
