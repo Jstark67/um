@@ -1,37 +1,55 @@
+/**************************************************************
+ *
+ *                     um.c
+ *
+ *     Assignment: HW6 um
+ *     Authors:  David Chen and Sam Hu
+ *     Date:  Nov 20th
+ *
+ *     summary:
+ *      
+ *     um.c contains driver functions for the universal machine. The
+ *     program reads in a list of program instructions, store them 
+ *     in a virtual memory system and execute them individually. 
+ *
+ **************************************************************/
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <uarray.h>
-
 #include "uinterprate.h"
 #include "umemory.h"
-
 #include "uexecute.h"
 
-//#include <>
 #define CMD_SIZE 4
 #define NUM_REG 8
-typedef enum Um_opcode {
-        CMOV = 0, SLOAD, SSTORE, ADD, MUL, DIV,
-        NAND, HALT, ACTIVATE, INACTIVATE, OUT, IN, LOADP, LV
-} Um_opcode;
 
-typedef enum Um_register { r0 = 0, r1, r2, r3, r4, r5, r6, r7 } Um_register;
-
-typedef struct Machine {
-        Mem_T mem;
-        uint32_t reg[NUM_REG];
-
-} *Machine;
-
+/********** read_code ********
+ *
+ * Reads file input and return a Uarray of program instructions
+ *
+ * Parameters:
+ *      FILE *fp: input stream that contains program instructions
+ *
+ * Return: UArray_T of uint32_ts: program instructions
+ * 
+ * Expects
+ *      input must not be NULL
+ * Notes:
+ *      Will CRE if input is NULL
+ ************************/
 UArray_T read_code(FILE *fp)
 {
+        /* Error Handling */
+        assert(fp != NULL);
+        
+        /* Process input and find the number of instructions */
         fseek(fp,0,SEEK_END);
-
-        int length = ftell(fp) /CMD_SIZE;
+        int length = ftell(fp) / CMD_SIZE;
         assert(ftell(fp) != 0);
-
         rewind(fp);
+
+        /* Create an empty UArray and innitialize it */
         UArray_T program = UArray_new(length,CMD_SIZE);
         for (long i = 0; i < length; i++) {
                 uint32_t code = 0;
@@ -45,101 +63,18 @@ UArray_T read_code(FILE *fp)
         
         return program;
 }
-void halt_exit(Machine *mach)
-{
-        free(*mach);
-        exit(0);
-}
-void callExe(Machine mach, uint32_t *line,  uint32_t *curP)
-{
-        uint32_t inst, opcode, value, a, b, c, *ra,*rb,*rc;
-        inst = mem_inst(mach->mem, *line);
-        opcode = getOpcode(inst);
-        //printf("opcode = %u\n",opcode);
-        if (opcode < LV){
-                setRef(inst,&a,&b,&c);
-                ra = &mach->reg[a];
-                rb = &mach->reg[b];
-                rc = &mach->reg[c];
-        } else if (opcode == LV) {
-                value = setLoad(inst,&c);
-                rc = &mach->reg[c];
-        } else {
-                exit(1);
-        }
-        
-        if (opcode == CMOV){
-                // printf("CMOV\n");
-                move(ra,rb,rc);
-        } else if (opcode == SLOAD){
-                // printf("SLOAD\n");
-                segL(mach->mem,ra,rb,rc);
-        } else if (opcode == SSTORE){
-                // printf("SSTORE\n");
-                segS(mach->mem,ra,rb,rc);
-        } else if (opcode == ADD){
-                // printf("ADD\n");
-                add(ra,rb,rc);
-        } else if (opcode == MUL){
-                // printf("MUL\n");
-                mult(ra,rb,rc);
-        } else if (opcode == DIV){
-                // printf("DIV\n");
-                divide(ra,rb,rc);
-        } else if (opcode == NAND){
-                // printf("NAND\n");
-                nand(ra,rb,rc);
-        } else if (opcode == HALT){
-                // printf("HALT\n");
-                halt(&mach->mem);
-                halt_exit(&mach);
-        } else if (opcode == ACTIVATE){
-                // printf("ACTIVATE\n");
-                map(mach->mem,rb,rc);
-        } else if (opcode == INACTIVATE){
-                // printf("INACTIVATE\n");
-                unmap(mach->mem,rc);
-        } else if (opcode == OUT){
-                // printf("OUT\n");
-                out(rc);
-        } else if (opcode == IN){
-                // printf("IN\n");
-                in(rc);
-        } else if (opcode == LOADP){
-                // printf("LOADP\n");
-                if (*rb == 0) {
-                        *line = *rc - 1;
-                } else {
-                        *line = *rc - 1; /*-1 to handle i++; sok since signed*/
-                        *curP = loadP(mach->mem,rb);
-                }
-        } else if (opcode == LV){
-                // printf("LV\n");
-                lv(value,rc);
-        } 
-        
-        
-} 
 
-void printArr(UArray_T a)
-{
-        for (int i = 0; i < UArray_length(a); i++) {
-                uint32_t *cur_code = UArray_at(a, i);
-                (void)cur_code;
-        }
-        
-}
+
+/* main */
 int main(int argc, char* argv[])
 {
-
-
-        
-        /*initialize with input*/
-         
+        /* handle false input */
         if (argc > 2) {
                 fprintf(stderr, "Usage: %s [filename]\n", argv[0]);
                 exit(1);
         }
+
+        /* innitialize the universal machine */
         Machine mach = malloc(sizeof(*mach));
         assert(mach != NULL);
 
@@ -147,7 +82,6 @@ int main(int argc, char* argv[])
                 mach->reg[i] = 0;
         }
 
-        
         if (argc == 2) {
                 FILE *fp = fopen(argv[1], "r");
                 assert(fp != NULL);
@@ -157,15 +91,14 @@ int main(int argc, char* argv[])
                 mach->mem = mem_init(read_code(stdin));
         }
 
-        // umemory_load_store_test(mach->mem);
-        /*execution cycle*/
-        uint32_t i;
+        /* execute individual program instructions */
         uint32_t curP = UArray_length(Seq_get(mach->mem->seg_mem, 0));
-        for (i = 0; i < curP; i++) {
-                // printf("%u\n", i);
-                callExe(mach,&i,&curP);
+        for (mach->program_counter = 0; mach->program_counter < curP; 
+             mach->program_counter++) {
+                callExe(mach,&mach->program_counter,&curP);
         }
+        
+        /* free the program after use */
         mem_free(&mach->mem);
         free(mach);
-        
 }
