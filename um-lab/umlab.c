@@ -31,7 +31,7 @@ typedef enum Um_opcode {
 
 /* Functions that return the two instruction types */
 
-Um_instruction three_register(Um_opcode op, int ra, int rb, int rc)
+static inline Um_instruction three_register(Um_opcode op, int ra, int rb, int rc)
 {
         Um_instruction instruction = 0;
         instruction = Bitpack_newu(instruction,4,28,op);
@@ -40,7 +40,7 @@ Um_instruction three_register(Um_opcode op, int ra, int rb, int rc)
         instruction = Bitpack_newu(instruction,3,0,rc);
         return instruction;
 }
-Um_instruction loadval(unsigned ra, unsigned val)
+static inline Um_instruction loadval(unsigned ra, unsigned val)
 {
         uint64_t instruction = 0;
 
@@ -55,22 +55,63 @@ Um_instruction loadval(unsigned ra, unsigned val)
 
 /* Wrapper functions for each of the instructions */
 
-static inline Um_instruction halt(void) 
-{
-        return three_register(HALT, 0, 0, 0);
-}
+
 
 typedef enum Um_register { r0 = 0, r1, r2, r3, r4, r5, r6, r7 } Um_register;
 
+static inline Um_instruction cmov(Um_register a, Um_register b, Um_register c) 
+{
+        return three_register(CMOV, a, b, c);
+}
+static inline Um_instruction segl(Um_register a, Um_register b, Um_register c) 
+{
+        return three_register(SLOAD, a, b, c);
+}
+static inline Um_instruction segs(Um_register a, Um_register b, Um_register c) 
+{
+        return three_register(SSTORE, a, b, c);
+}
 static inline Um_instruction add(Um_register a, Um_register b, Um_register c) 
 {
         return three_register(ADD, a, b, c);
 }
-
-Um_instruction output(Um_register c)
+static inline Um_instruction mul(Um_register a, Um_register b, Um_register c) 
+{
+        return three_register(MUL, a, b, c);
+}
+static inline Um_instruction divide(Um_register a, Um_register b, Um_register c) 
+{
+        return three_register(DIV, a, b, c);
+}
+static inline Um_instruction nand(Um_register a, Um_register b, Um_register c) 
+{
+        return three_register(NAND, a, b, c);
+}
+static inline Um_instruction halt(void) 
+{
+        return three_register(HALT, 0, 0, 0);
+}
+static inline Um_instruction map(Um_register b, Um_register c)
+{
+        return three_register(ACTIVATE, 0, b, c);
+}static inline Um_instruction unmap(Um_register c)
+{
+        return three_register(INACTIVATE, 0, 0, c);
+}
+static inline Um_instruction output(Um_register c)
 {
         return three_register(OUT, 0, 0, c);
 }
+static inline Um_instruction input(Um_register c)
+{
+        return three_register(IN, 0, 0, c);
+}
+static inline Um_instruction loadP(Um_register b, Um_register c)
+{
+        return three_register(LOADP, 0, b, c);
+}
+
+
 
 /* Functions for working with streams */
 
@@ -98,12 +139,12 @@ void Um_write_sequence(FILE *output, Seq_T stream)
 
 /* Unit tests for the UM */
 
-void build_halt_test(Seq_T stream)
+void test_halt(Seq_T stream)
 {
         append(stream, halt());
 }
 
-void build_verbose_halt_test(Seq_T stream)
+void test_halt_verbose(Seq_T stream)
 {
         append(stream, halt());
         append(stream, loadval(r1, 'B'));
@@ -118,45 +159,131 @@ void build_verbose_halt_test(Seq_T stream)
         append(stream, output(r1));
 }
 
-void add_two_numbers(Seq_T stream)
+void test_out(Seq_T stream)
 {
-        append(stream, add(r1, r2, r3));
+        append(stream, loadval(r0, 'H'));
+        append(stream, output(r0));
+        append(stream, loadval(r0, 'e'));
+        append(stream, output(r0));
+        append(stream, loadval(r0, 'l'));
+        append(stream, output(r0));
+        append(stream, loadval(r0, 'l'));
+        append(stream, output(r0));
+        append(stream, loadval(r0, 'o'));
+        append(stream, output(r0));
+        append(stream, loadval(r0, '\n'));
+        append(stream, output(r0));
         append(stream, halt());
 }
 
-void print_add(Seq_T stream)
+void test_add(Seq_T stream)
 {
-        /* load values to add and output */
+
         append(stream, loadval(r1, 48));
         append(stream, loadval(r2, 6));
-
-        /* 48 + 6 = 54 */
         append(stream, add(r3, r1, r2));
-
-        /* output result as char */
         append(stream, output(r3));
+        append(stream, loadval(r0, '\n'));
+        append(stream, output(r0));
         append(stream, halt());
 }
 
-typedef struct Mem_T {
-        Seq_T seg_mem;
-        Seq_T unmapped;
-        uint32_t maxID;
-} *Mem_T
-
-const char* FILETOLOAD = "test.um";
-const uint32_t INST[4] = [0x1f2b7444,0x1f2b7444,0x1f2b7444,0x1f2b7444]
-
-FILE *fp = fopen(FILETOLOAD);
-UArray_T prog = read_words(fp);/*assuming this is correct */
-Mem_T memory = mem_init(prog); /*function tested*/
-
-UArray_T testArr = Seq_get(memory->seg_mem);
-
-for(int i = 0; i < Uarray_length(testArr);i++){ /*compare each instruction with standard answer*/
-        uint32_t num = (uint32_t)(uintptr_t)Uarray_at(testArr,i);
-        printf("the result %s for instruction %d \n", ((num == inst[i]) ? "MATCHED!" : "DOES NOT MATCH!"),i);
+void test_mult(Seq_T stream)
+{
+        append(stream, loadval(r1, 3));
+        append(stream, loadval(r2, 16));
+        append(stream, mul(r3, r1, r2));
+        append(stream, output(r3));
+        append(stream, loadval(r1, 0x1111112));
+        append(stream, loadval(r2, 240));
+        append(stream, mul(r3, r1, r2));
+        append(stream, output(r3));
+        append(stream, loadval(r0, '\n'));
+        append(stream, output(r0));
+        append(stream, halt());
 }
 
-fclose(fp);
-umemory_free(&memory);/*function tested*/
+void test_add_edge(Seq_T stream)
+{
+
+        append(stream, loadval(r1, 0x1ffffff));
+        append(stream, loadval(r2, 128));
+        append(stream, mul(r3, r1, r2));
+        append(stream, loadval(r1, 176));
+        append(stream, add(r3, r3, r1));
+        append(stream, output(r3));
+        append(stream, loadval(r0, '\n'));
+        append(stream, output(r0));
+        append(stream, halt());
+}
+
+void test_div(Seq_T stream)
+{
+
+        append(stream, loadval(r1, 96));
+        append(stream, loadval(r2, 2));
+        append(stream, divide(r3, r1, r2));
+        append(stream, output(r3));
+        append(stream, loadval(r0, '\n'));
+        append(stream, output(r0));
+        append(stream, halt());
+}
+
+void test_mov(Seq_T stream)
+{
+
+        append(stream, loadval(r1, 1));
+        append(stream, loadval(r2, 49));
+        append(stream, loadval(r3, 48));
+        append(stream, loadval(r4, 0));
+        append(stream, cmov(r4, r3, r2));
+        append(stream, output(r3));
+        append(stream, cmov(r1, r3, r2));
+        append(stream, output(r3));
+        append(stream, loadval(r0, '\n'));
+        append(stream, output(r0));
+        append(stream, halt());
+}
+
+void test_nand(Seq_T stream)
+{
+        append(stream, loadval(r1, 0xcd));
+        append(stream, loadval(r2, 0xff));
+        append(stream, nand(r1, r3, r2));
+        append(stream, output(r3));
+        append(stream, loadval(r0, '\n'));
+        append(stream, output(r0));
+        append(stream, halt());
+}
+
+
+
+void test_segl(Seq_T stream)
+{
+        append(stream, loadval(r1, 8));
+        append(stream, loadval(r2, 0x1fffff8));
+        append(stream, add(r2, r2, r1));
+        append(stream, segl(r1, r3,r1));
+        append(stream, divide(r3, r1,r2));
+        append(stream, output(r3));
+        append(stream, loadval(r0, '\n'));
+        append(stream, output(r0));
+        append(stream, halt());
+}
+void test_segs(Seq_T stream);
+
+void test_unmap(Seq_T stream);
+
+void test_loadp(Seq_T stream);
+
+void test_map(Seq_T stream)
+{
+        // append(stream, loadval(r1, 1));
+        // append(stream, map(r1, r1));
+        // append(stream, loadval(r1, 1));
+        // append(stream, map(r2, r1));
+        // append(stream, output(r3));
+        // append(stream, loadval(r0, '\n'));
+        // append(stream, output(r0));
+        append(stream, halt());
+}
