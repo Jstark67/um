@@ -236,9 +236,9 @@ void test_mov(Seq_T stream)
         append(stream, loadval(r2, 49));
         append(stream, loadval(r3, 48));
         append(stream, loadval(r4, 0));
-        append(stream, cmov(r4, r3, r2));
+        append(stream, cmov(r3, r2,r4));
         append(stream, output(r3));
-        append(stream, cmov(r1, r3, r2));
+        append(stream, cmov(r3, r2, r1));
         append(stream, output(r3));
         append(stream, loadval(r0, '\n'));
         append(stream, output(r0));
@@ -250,13 +250,31 @@ void test_nand(Seq_T stream)
         append(stream, loadval(r1, 0xcd));
         append(stream, loadval(r2, 0xff));
         append(stream, nand(r1, r3, r2));
+        append(stream, loadval(r2, 0x800000));
+        append(stream, mul(r3, r3,r2));
+        append(stream, divide(r3, r3,r2));
         append(stream, output(r3));
         append(stream, loadval(r0, '\n'));
         append(stream, output(r0));
         append(stream, halt());
 }
 
-
+void test_in(Seq_T stream)
+{
+        append(stream, input(r0));
+        append(stream, input(r1));
+        append(stream, input(r2));
+        append(stream, input(r3));
+        append(stream, input(r4));
+        append(stream, output(r0));
+        append(stream, output(r1));
+        append(stream, output(r2));
+        append(stream, output(r3));
+        append(stream, output(r4));
+        append(stream, loadval(r0, '\n'));
+        append(stream, output(r0));
+        append(stream, halt());
+}
 
 void test_segl(Seq_T stream)
 {
@@ -270,20 +288,40 @@ void test_segl(Seq_T stream)
         append(stream, output(r0));
         append(stream, halt());
 }
-void test_segs(Seq_T stream);
+void test_segs(Seq_T stream)
+{
+        append(stream, loadval(r2, 0x1fffffa));
+        append(stream, loadval(r1, 6));
+        append(stream, add(r2, r2, r1));
+        append(stream, loadval(r1, 'V'));
+        append(stream, mul(r2, r2, r1));
+        append(stream, segs(r3, r1,r2));
+        append(stream, add(r2, r2, r1));
+}
 
 void test_unmap(Seq_T stream);
 
-void test_loadp(Seq_T stream);
-
 void test_map(Seq_T stream)
 {
-        // append(stream, loadval(r1, 1));
-        // append(stream, map(r1, r1));
-        // append(stream, loadval(r1, 1));
-        // append(stream, map(r2, r1));
-        // append(stream, output(r3));
-        // append(stream, loadval(r0, '\n'));
-        // append(stream, output(r0));
+        append(stream, loadval(r1, 1));
+        append(stream, map(r1, r1));
+        append(stream, loadval(r2, 50));
+        append(stream, segs(r1, r3,r2));
+        append(stream, segl(r1, r1,r3));
+        append(stream, output(r1));
+        append(stream, loadval(r0, '\n'));
+        append(stream, output(r0));
         append(stream, halt());
+}
+
+void test_loadp(Seq_T stream)
+{
+        append(stream, loadval(r0, 3));
+        append(stream, loadP(r1, r0));
+        append(stream, halt());
+        append(stream, loadval(r2, 50));
+        append(stream, map(r2, r2));
+        append(stream, loadval(r3, 31));
+        
+
 }

@@ -20,6 +20,7 @@ extern void test_add_edge(Seq_T stream);
 extern void test_div(Seq_T stream);
 extern void test_mov(Seq_T stream);
 extern void test_nand(Seq_T stream);
+extern void test_in(Seq_T stream);
 extern void test_segl(Seq_T stream);
 extern void test_segs(Seq_T stream);
 extern void test_unmap(Seq_T stream);
@@ -52,6 +53,7 @@ static struct test_info {
         {"test_mov", NULL, "01\n", test_mov},
         {"test_nand", NULL, "01\n", test_nand},
         {"test_segl", NULL, "V\n", test_segl},
+        {"test_in", "HELLO", "HELLO\n", test_in},
 };
 
   
