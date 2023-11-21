@@ -301,7 +301,13 @@ void test_segs(Seq_T stream)
         append(stream, add(r2, r2, r1));
 }
 
-void test_unmap(Seq_T stream);
+void test_unmap(Seq_T stream)
+{
+        append(stream, loadval(r1, 1));
+        append(stream, map(r1, r1));
+        append(stream, unmap(r1));
+        append(stream, halt());
+}
 
 void test_map(Seq_T stream)
 {
