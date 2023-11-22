@@ -1,0 +1,112 @@
+- Identifies you and your programming partner by name
+
+Sam Hu (khu04) and David Chen (zchen18)
+
+– Acknowledges help you may have received from or collaborative work you may have undertaken
+with others
+
+
+
+
+
+
+– Identifies what has been correctly implemented and what has not
+
+all features identified from the spec has been successfully implemented
+
+
+– Briefly enumerates any significant departures from your design
+
+TODO:DAVID
+
+– Succinctly describes the architecture of your system. 
+
+our system uses a Machine struct, which contains the memory as Seq_T (detail in next paragraph) and a uint32_t array of 8 elements as the register.
+
+The SeqT holds a sequence of UArray_Ts, each of which emulates a memory segment, where each element of a UArray holds one single uint32_t, masked as a uintptr_t 
+
+
+Identify the modules used, what abstractions they implement, what secrets they know, and how they relate to one another. Avoid narrative descriptions of the behavior of particular modules.
+
+
+
+– Explains how long it takes your UM to execute 50 million instructions, and how you know
+
+TODO:DAVID
+
+– Mentions each UM unit test (from UMTESTS) by name, explaining what each one tests and how
+
+
+Each test tests the function that its name contains, and all except for the two halt tests also implicitly tests load value.
+
+The tests, in this order, also uses features tested from previous 
+
+
+        ***extern void test_halt(Seq_T stream);***
+
+        simply halts the program.
+
+        ***extern void test_halt_verbose(Seq_T stream);***
+
+        put executions after halt, which should not run.
+
+        **extern void test_out(Seq_T stream);**
+
+        Prints "Hello\n" to stdout char by char.
+
+        **extern void test_add(Seq_T stream);**
+
+        adds 48 and 6, print the result as char to stdout.
+
+        **extern void test_mult(Seq_T stream);**
+
+        tests multiplication in its standard cases and edge cases by checking output values. edge case refers to creating a 2^33 bit number that is printable after modding by 2^32 and printing it.
+
+        **extern void test_add_edge(Seq_T stream);**
+
+        similar to edge case of mult but using addition. tested after mult as it uses mult.
+
+        ***extern void test_div(Seq_T stream);***
+
+        divide a value and print the result to stdout.
+
+        ***extern void test_mov(Seq_T stream);***
+
+        tests both moving and not moving conditions for cmov, should print two different values as result of the successful&unsuccessful moves.
+
+        ***extern void test_nand(Seq_T stream);***
+
+        creates a printable value with nand being a critical step and prints it to check.
+
+        ***extern void test_in(Seq_T stream);***
+
+        takes in "HELLO" and prints "HELLO\n"
+
+        ***extern void test_segl(Seq_T stream);***
+
+        loads value of halt instruction and divide it into value of a readable character and print it to stdout.
+
+        ***extern void test_segs(Seq_T stream);***
+
+        manually creates a halt instruction and stores it on the last line of the program, which was supposed to add.
+
+        ***extern void test_map(Seq_T stream);***
+        
+        maps a new segment, store a value into it and print it by loading from that segment and line.
+
+        *** extern void test_unmap(Seq_T stream);***
+
+        maps and unmaps a segment, then calls halt. We did conceive a more solid test by accessing the segment after being unmapped. This is however categorized as invalid as it induces undefined behavior.
+
+        ***extern void test_loadp(Seq_T stream);***
+
+        test both cases (in-program jump and to-program jump)
+
+        the latter is tested by skipping a halt instruction mid-way, the latter is tested by mapping a segment, fetching and storing that halt instruction into the new segment and jump to it.
+
+
+
+
+– Says approximately how many hours you have spent analyzing the assignment
+– Says approximately how many hours you have spent preparing your design
+– Says approximately how many hours you have spent solving the problems after your analysis

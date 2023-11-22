@@ -1,0 +1,15 @@
+test_halt.um
+test_halt_verbose.um
+test_out.um
+test_add.um
+test_mult.um
+test_add_edge.um
+test_div.um
+test_mov.um
+test_nand.um
+test_segl.um
+test_segs.um
+test_in.um
+test_map.um
+test_loadp.um
+test_unmap.um
