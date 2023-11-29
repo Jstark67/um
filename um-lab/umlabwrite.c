@@ -51,7 +51,7 @@ static struct test_info {
         {"test_add_edge", NULL, "0\n", test_add_edge},
         {"test_div", NULL, "0\n", test_div},
         {"test_mov", NULL, "01\n", test_mov},
-        {"test_nand", NULL, "01\n", test_nand},
+        {"test_nand", NULL, "2\n", test_nand},
         {"test_segl", NULL, "", test_segl},
         {"test_segs", NULL, "V\n", test_segs},
         {"test_in", "HELLO", "HELLO\n", test_in},

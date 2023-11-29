@@ -60,9 +60,6 @@ void in(uint32_t *rc);
 int loadP(Mem_T mem, uint32_t *rb);
 void lv(uint32_t value, uint32_t *rc);
 
-/* Execution Handler */
-void callExe(Machine mach, uint32_t *line,  uint32_t *curP);
-
 /* Halt Helper function */
 void halt_exit(Machine *mach);
 

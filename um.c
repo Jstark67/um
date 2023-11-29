@@ -21,8 +21,83 @@
 #include "umemory.h"
 #include "uexecute.h"
 
+
 #define CMD_SIZE 4
 #define NUM_REG 8
+
+/* callExe (Call Execute)
+ * Executes an instruction in the machine's memory based on its opcode
+ * Params: 
+ *      - Machine mach: The machine instance containing the state, memory, 
+        and registers
+ *      - uint32_t *line: Pointer to the program counter
+ *      - uint32_t *curP: Pointer to the length of the program instructions
+ * Return: 
+ *      - void
+ * Description: 
+ *      This function decodes and executes an instruction from the machine's
+ *      memory. It retrieves the instruction from the current line, 
+ *      decodes its opcode, and executes the corresponding operation.
+ *      The function updates the machine state accordingly, including 
+ *      registers and program counters.
+ */
+void callExe(Machine mach, uint32_t *line,  uint32_t *curP)
+{
+        /* initialize components of the machine */
+        uint32_t inst, opcode, value, a, b, c, *ra,*rb,*rc;
+        inst = mem_inst(mach->mem, *line);
+        opcode = getOpcode(inst);
+        
+        /* preprocess based on the opcode */
+        if (opcode < LV){
+                setRef(inst,&a,&b,&c);
+                ra = &mach->reg[a];
+                rb = &mach->reg[b];
+                rc = &mach->reg[c];
+        } else if (opcode == LV) {
+                value = setLoad(inst,&c);
+                rc = &mach->reg[c];
+        } else {
+                exit(1);
+        }
+        
+        /* call specific execution functions */
+        if (opcode == CMOV){
+                move(ra,rb,rc);
+        } else if (opcode == SLOAD){
+                segL(mach->mem,ra,rb,rc);
+        } else if (opcode == SSTORE){
+                segS(mach->mem,ra,rb,rc);
+        } else if (opcode == ADD){
+                add(ra,rb,rc);
+        } else if (opcode == MUL){
+                mult(ra,rb,rc);
+        } else if (opcode == DIV){
+                divide(ra,rb,rc);
+        } else if (opcode == NAND){
+                nand(ra,rb,rc);
+        } else if (opcode == HALT){
+                halt(&mach->mem);
+                halt_exit(&mach);
+        } else if (opcode == ACTIVATE){
+                map(mach->mem,rb,rc);
+        } else if (opcode == INACTIVATE){
+                unmap(mach->mem,rc);
+        } else if (opcode == OUT){
+                out(rc);
+        } else if (opcode == IN){
+                in(rc);
+        } else if (opcode == LOADP){
+                if (*rb == 0) {
+                        *line = *rc - 1;
+                } else {
+                        *line = *rc - 1; /*-1 to handle i++;*/
+                        *curP = loadP(mach->mem,rb);
+                }
+        } else if (opcode == LV){
+                lv(value,rc);
+        } 
+} 
 
 /********** read_code ********
  *
@@ -69,7 +144,7 @@ UArray_T read_code(FILE *fp)
 int main(int argc, char* argv[])
 {
         /* handle false input */
-        if (argc > 2) {
+        if (argc != 2) {
                 fprintf(stderr, "Usage: %s [filename]\n", argv[0]);
                 exit(1);
         }
@@ -77,19 +152,17 @@ int main(int argc, char* argv[])
         /* innitialize the universal machine */
         Machine mach = malloc(sizeof(*mach));
         assert(mach != NULL);
-
         for (uint32_t i = 0; i < NUM_REG; i++){
                 mach->reg[i] = 0;
         }
 
-        if (argc == 2) {
-                FILE *fp = fopen(argv[1], "r");
-                assert(fp != NULL);
-                mach->mem = mem_init(read_code(fp));
-                fclose(fp);
-        } else {
-                mach->mem = mem_init(read_code(stdin));
-        }
+
+        /*load program*/
+        FILE *fp = fopen(argv[1], "r");
+        assert(fp != NULL);
+        mach->mem = mem_init(read_code(fp));
+        fclose(fp);
+        
 
         /* execute individual program instructions */
         uint32_t curP = UArray_length(Seq_get(mach->mem->seg_mem, 0));
@@ -97,8 +170,7 @@ int main(int argc, char* argv[])
              mach->program_counter++) {
                 callExe(mach,&mach->program_counter,&curP);
         }
-        
-        /* free the program after use */
+        /* free the program after use if not freed already */
         mem_free(&mach->mem);
         free(mach);
 }

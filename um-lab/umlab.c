@@ -251,8 +251,10 @@ void test_nand(Seq_T stream)
 {
         append(stream, loadval(r1, 0xcd));
         append(stream, loadval(r2, 0xff));
-        append(stream, nand(r1, r3, r2));
-        append(stream, loadval(r2, 0x800000));
+        append(stream, nand(r3, r1, r2));
+        append(stream, loadval(r2, 0x1000000));
+        append(stream, loadval(r1, 2));
+        append(stream, mul(r2, r1,r2));
         append(stream, mul(r3, r3,r2));
         append(stream, divide(r3, r3,r2));
         append(stream, output(r3));
@@ -292,10 +294,12 @@ void test_segl(Seq_T stream)
 }
 void test_segs(Seq_T stream)
 {
-        append(stream, loadval(r2, 0x1fffffa));
-        append(stream, loadval(r1, 6));
+        append(stream, loadval(r2, 0x1fffff8));
+        append(stream, loadval(r1, 8));
         append(stream, add(r2, r2, r1));
-        append(stream, loadval(r1, 'V'));
+        append(stream, loadval(r3, 2));
+        append(stream, mul(r2, r2, r3));
+        append(stream, loadval(r1, 8));
         append(stream, mul(r2, r2, r1));
         append(stream, segs(r3, r1,r2));
         append(stream, add(r2, r2, r1));
