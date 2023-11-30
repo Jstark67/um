@@ -19,6 +19,11 @@
 #define REG_LEN 3
 #define VAL_LEN 25
 
+uint32_t Bitpack_getu(uint32_t word, unsigned width, unsigned lsb)
+{
+        return (word<<(32 - (lsb + width))) >> (32 - width);
+}
+
 /* getOpcode
  * Extracts the opcode from an uint32_t instruction
  * Params: 

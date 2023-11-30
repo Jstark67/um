@@ -12,7 +12,7 @@ EXECS   = um
 
 all: $(EXECS)
 
-um: um.o  umemory.o uexecute.o uinterprate.o bitpack.o 
+um: um.o  umemory.o uexecute.o uinterprate.o
 	$(CC) $(LDFLAGS) $^ -o $@ $(LDLIBS)
 
 
