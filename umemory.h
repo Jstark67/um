@@ -29,6 +29,22 @@ typedef struct Mem_T {
         Seq_T unmapped;
 } *Mem_T;
 
+
+
+//uint32_t **mem;
+
+// OR 
+
+// typedef struct Linkmem {
+//         uint32_t* segment;
+//         linkmem* next;
+// }Linkmem;
+
+// typedef struct NewMem_T {
+//         Linkmem seg_mem;
+//         Linkmem unmapped;
+// };
+
 /* Memory Operations */
 Mem_T mem_init(UArray_T program);
 uint32_t mem_map(uint32_t size, Mem_T mem);

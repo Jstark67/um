@@ -92,7 +92,7 @@ void mem_free(Mem_T *mem)
 uint32_t mem_map(uint32_t length, Mem_T mem)
 {
         /* invalid input */
-        assert(length > 0 && mem != NULL && mem->seg_mem != NULL
+        assert(mem != NULL && mem->seg_mem != NULL
                && mem->unmapped != NULL);
 
         /* initialize UArray */
