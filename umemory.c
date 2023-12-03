@@ -19,17 +19,7 @@
 #define unit_size 4
 #define HINT 0
 
-/* mem_init
- * Initialize a Mem_T object and populate m[0] through the inputted program 
- * instructions
- * Params: Uarray_T of uint32_ts: program instructions
- * Return: 
- *      - a Mem_T object, with m[0] substantiated
- * Expectation: 
- *      - CRE will occur if the initialization of Hanson sequences
- *        failed, which would be handled by Hanson’s exception mechanisms
- *      - CRE will occur if the input is NULL
-*/
+
 Mem_T mem_init(UArray_T program)
 {       
         /* exit of input instructions are null */
@@ -40,11 +30,18 @@ Mem_T mem_init(UArray_T program)
         assert(mem != NULL);
 
         /* allocate host memory for the two sequences */
-        mem->seg_mem = Seq_new(HINT);
-        mem->unmapped = Seq_new(HINT);
+        mem->capacity = 2;
+        mem->size = 1;
+        mem->ucap = 2;
+        mem->usize = 0;
+        mem->seg_mem = malloc(mem->capacity * sizeof(uint32_t*));
+        mem->unmapped = malloc(mem->ucap * sizeof(uint32_t));
         
         /* add the program instructions to $m[0] */
-        Seq_addhi(mem->seg_mem, program);
+        int length = UArray_length(program);
+        for (int i = 0; i < length; i++) {
+                mem->seg_mem[0][i] = *(uint32_t *)UArray_at(program, i);
+        }
 
         return mem;
 }
@@ -64,17 +61,14 @@ void mem_free(Mem_T *mem)
                && (*mem)->unmapped != NULL);
         
         /* remove every virtual memory segment */  
-        for(int i = 0; i < Seq_length((*mem)->seg_mem); i++){
-                UArray_T cur = Seq_get((*mem)->seg_mem, i);
-                if (cur != NULL) {
-                        UArray_free(&cur);
-                }
+        for(uint32_t i = 0; i < (*mem)->size; i++) {
+                free((*mem)->seg_mem[i]);
         }
 
         /* remove the two sequences and the entire memory struct */  
-        Seq_free(&(*mem)->seg_mem);
-        Seq_free(&(*mem)->unmapped);
-        free(*mem);
+        free((*mem)->seg_mem);
+        free((*mem)->unmapped);
+        free(mem);
 }
 
 /* mem_map
@@ -96,23 +90,31 @@ uint32_t mem_map(uint32_t length, Mem_T mem)
                && mem->unmapped != NULL);
 
         /* initialize UArray */
-        UArray_T Segment = UArray_new(length, unit_size);
+        uint32_t* Segment = malloc(length * sizeof(uint32_t));
         assert(Segment != NULL);
 
         /* initiate a Hanson sequence that stores uint32_t unmapped indices */
-        int unmapped_num = Seq_length(mem->unmapped);
+        int unmapped_num = mem->usize;
         
         /* map the memory, assign index based on previously unmmaped slots */
         uint32_t idx;
         if (unmapped_num == 0) {
-                Seq_addhi(mem->seg_mem, Segment);
-                idx = Seq_length(mem->seg_mem) - 1;
+                if (mem->size == mem->capacity) {
+                        mem->capacity *= 2;
+                        uint32_t **new_seg_mem = realloc(mem->seg_mem, mem->capacity);
+                        assert(new_seg_mem != NULL);
+                        mem->seg_mem = new_seg_mem;
+                }
+                idx = mem->size
+                mem->seg_mem[idx] = Segment;
+                mem->size += 1;
         } else {
-                idx = (uint32_t)(uintptr_t)Seq_get(mem->unmapped, 0);
-                
-                assert(Seq_get(mem->seg_mem, idx) == NULL);
-                Seq_remlo(mem->unmapped);
-                Seq_put(mem->seg_mem, idx, Segment);
+                idx = unmapped_num[0];
+                for (uint32_t i = 1; i < mem->usize; i++) {
+                        mem->unmapped[i - 1] = mem->unmapped[i];
+                }
+                mem->usize -= 1;
+                mem->seg_mem[idx] = Segment;
         }
 
         return idx;
@@ -134,16 +136,24 @@ void mem_unmap(Mem_T mem, uint32_t idx)
         /* invalid inputs */
         assert(mem != NULL && mem->seg_mem != NULL &&
                mem->unmapped != NULL && idx > 0);
-        UArray_T unmapped_seg = Seq_get(mem->seg_mem, idx);
+        uint32_t *unmapped_seg = mem->seg_mem[idx];
         assert(unmapped_seg != NULL);
 
+        
+        mem->seg_mem[idx] == NULL;
+
         /* append the current index to the ummaped sequence */
-        Seq_addhi(mem->unmapped, (void *)(uintptr_t)idx);
+        if (mem->usize == mem->ucap) {
+                mem->ucap *= 2;
+                uint32_t *new_unmapped= realloc(mem->unmapped, mem->ucap);
+                assert(new_unmapped != NULL);
+                mem->unmapped= new_unmapped;
+        }
         
         /* replace the segment with NULL and free the segment */
-        Seq_put(mem->seg_mem, idx, NULL);
-        assert(Seq_get(mem->seg_mem, idx) == NULL);
-        UArray_free(&unmapped_seg);
+        mem->unmapped[mem->usize] = idx;
+        mem->usize += 1;
+        free(unmapped_seg);
 }
 
 
@@ -160,10 +170,9 @@ void mem_unmap(Mem_T mem, uint32_t idx)
 */
 uint32_t mem_load(Mem_T mem, uint32_t memi, uint32_t segi)
 {
-        assert(mem != NULL && mem->seg_mem != NULL);
-        UArray_T segment = Seq_get(mem->seg_mem, memi);
-        uint32_t *value = UArray_at(segment, segi);
-        return *value;
+        assert(mem != NULL && mem->seg_mem != NULL && memi < mem->size);
+        uint32_t value = mem->seg_mem[memi][segi];
+        return value;
 }
 
 /* mem_store
@@ -180,9 +189,8 @@ uint32_t mem_load(Mem_T mem, uint32_t memi, uint32_t segi)
 */
 void mem_store(Mem_T mem, uint32_t memi, uint32_t segi, uint32_t value)
 {
-        assert(mem != NULL && mem->seg_mem != NULL);
-        UArray_T segment = Seq_get(mem->seg_mem, memi);
-        *(uint32_t *)UArray_at(segment, segi) = value;
+        assert(mem != NULL && mem->seg_mem != NULL && memi < mem->size);
+        mem->seg_mem[memi][segi] = value;
 }
 
 
@@ -201,9 +209,10 @@ uint32_t mem_loadP(Mem_T mem, uint32_t idx)
         assert(mem != NULL && mem->seg_mem != NULL);
 
         /* fetch target segments */
-        UArray_T old = Seq_get(mem->seg_mem, 0);
-        UArray_T new = Seq_get(mem->seg_mem, idx);
-        uint32_t length = UArray_length(new);
+        // UArray_T old = Seq_get(mem->seg_mem, 0);
+        // UArray_T new = Seq_get(mem->seg_mem, idx);
+        // uint32_t length = UArray_length(new);
+        
         
         /* free the original $m[0] */
         UArray_free(&old);

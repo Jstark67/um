@@ -25,8 +25,15 @@
 /* The following defines the struct of a memory system */
 typedef struct Mem_T {
         /* */
-        Seq_T seg_mem;
-        Seq_T unmapped;
+        // Seq_T seg_mem;
+        // Seq_T unmapped;
+        uint32_t **seg_mem;
+        uint32_t *unmapped;
+        uint32_t capacity;
+        uint32_t size;
+        uint32_t ucap;
+        uint32_t usize;
+        
 } *Mem_T;
 
 

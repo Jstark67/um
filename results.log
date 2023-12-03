@@ -1,0 +1,5 @@
+benchmark       time        rel St      rel Pre         Note
+
+small           7.27        1.000       1.000           We already used -O2 
+large           182.64      1.000       1.000           during HW6
+small I ref     40,824,472,134

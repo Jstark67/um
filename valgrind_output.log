@@ -1,0 +1,420 @@
+==3840582== Memcheck, a memory error detector
+==3840582== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==3840582== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+==3840582== Command: ./um ./test/test_add.um
+==3840582== 
+==3840582== 
+==3840582== HEAP SUMMARY:
+==3840582==     in use at exit: 0 bytes in 0 blocks
+==3840582==   total heap usage: 12 allocs, 12 frees, 17,300 bytes allocated
+==3840582== 
+==3840582== All heap blocks were freed -- no leaks are possible
+==3840582== 
+==3840582== For lists of detected and suppressed errors, rerun with: -s
+==3840582== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==3840586== Memcheck, a memory error detector
+==3840586== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==3840586== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+==3840586== Command: ./um ./test/test_add_edge.um
+==3840586== 
+==3840586== 
+==3840586== HEAP SUMMARY:
+==3840586==     in use at exit: 0 bytes in 0 blocks
+==3840586==   total heap usage: 12 allocs, 12 frees, 17,308 bytes allocated
+==3840586== 
+==3840586== All heap blocks were freed -- no leaks are possible
+==3840586== 
+==3840586== For lists of detected and suppressed errors, rerun with: -s
+==3840586== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==3840590== Memcheck, a memory error detector
+==3840590== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==3840590== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+==3840590== Command: ./um ./test/test_div.um
+==3840590== 
+==3840590== 
+==3840590== HEAP SUMMARY:
+==3840590==     in use at exit: 0 bytes in 0 blocks
+==3840590==   total heap usage: 12 allocs, 12 frees, 17,300 bytes allocated
+==3840590== 
+==3840590== All heap blocks were freed -- no leaks are possible
+==3840590== 
+==3840590== For lists of detected and suppressed errors, rerun with: -s
+==3840590== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==3840594== Memcheck, a memory error detector
+==3840594== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==3840594== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+==3840594== Command: ./um ./test/test_halt_verbose.um
+==3840594== 
+==3840594== 
+==3840594== HEAP SUMMARY:
+==3840594==     in use at exit: 0 bytes in 0 blocks
+==3840594==   total heap usage: 12 allocs, 12 frees, 17,316 bytes allocated
+==3840594== 
+==3840594== All heap blocks were freed -- no leaks are possible
+==3840594== 
+==3840594== For lists of detected and suppressed errors, rerun with: -s
+==3840594== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==3840597== Memcheck, a memory error detector
+==3840597== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==3840597== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+==3840597== Command: ./um ./test/test_halt.um
+==3840597== 
+==3840597== 
+==3840597== HEAP SUMMARY:
+==3840597==     in use at exit: 0 bytes in 0 blocks
+==3840597==   total heap usage: 12 allocs, 12 frees, 17,276 bytes allocated
+==3840597== 
+==3840597== All heap blocks were freed -- no leaks are possible
+==3840597== 
+==3840597== For lists of detected and suppressed errors, rerun with: -s
+==3840597== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==3840601== Memcheck, a memory error detector
+==3840601== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==3840601== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+==3840601== Command: ./um ./test/test_mov.um
+==3840601== 
+==3840601== 
+==3840601== HEAP SUMMARY:
+==3840601==     in use at exit: 0 bytes in 0 blocks
+==3840601==   total heap usage: 12 allocs, 12 frees, 17,316 bytes allocated
+==3840601== 
+==3840601== All heap blocks were freed -- no leaks are possible
+==3840601== 
+==3840601== For lists of detected and suppressed errors, rerun with: -s
+==3840601== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==3840605== Memcheck, a memory error detector
+==3840605== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==3840605== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+==3840605== Command: ./um ./test/test_mult.um
+==3840605== 
+==3840605== 
+==3840605== HEAP SUMMARY:
+==3840605==     in use at exit: 0 bytes in 0 blocks
+==3840605==   total heap usage: 12 allocs, 12 frees, 17,324 bytes allocated
+==3840605== 
+==3840605== All heap blocks were freed -- no leaks are possible
+==3840605== 
+==3840605== For lists of detected and suppressed errors, rerun with: -s
+==3840605== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==3840609== Memcheck, a memory error detector
+==3840609== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==3840609== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+==3840609== Command: ./um ./test/test_nand.um
+==3840609== 
+==3840609== 
+==3840609== HEAP SUMMARY:
+==3840609==     in use at exit: 0 bytes in 0 blocks
+==3840609==   total heap usage: 12 allocs, 12 frees, 17,320 bytes allocated
+==3840609== 
+==3840609== All heap blocks were freed -- no leaks are possible
+==3840609== 
+==3840609== For lists of detected and suppressed errors, rerun with: -s
+==3840609== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==3840613== Memcheck, a memory error detector
+==3840613== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==3840613== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+==3840613== Command: ./um ./test/test_out.um
+==3840613== 
+==3840613== 
+==3840613== HEAP SUMMARY:
+==3840613==     in use at exit: 0 bytes in 0 blocks
+==3840613==   total heap usage: 12 allocs, 12 frees, 17,324 bytes allocated
+==3840613== 
+==3840613== All heap blocks were freed -- no leaks are possible
+==3840613== 
+==3840613== For lists of detected and suppressed errors, rerun with: -s
+==3840613== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==3840617== Memcheck, a memory error detector
+==3840617== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==3840617== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+==3840617== Command: ./um ./test/test_segl.um
+==3840617== 
+==3840617== 
+==3840617== HEAP SUMMARY:
+==3840617==     in use at exit: 0 bytes in 0 blocks
+==3840617==   total heap usage: 12 allocs, 12 frees, 17,308 bytes allocated
+==3840617== 
+==3840617== All heap blocks were freed -- no leaks are possible
+==3840617== 
+==3840617== For lists of detected and suppressed errors, rerun with: -s
+==3840617== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==3840621== Memcheck, a memory error detector
+==3840621== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==3840621== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+==3840621== Command: ./um ./test/test_segs.um
+==3840621== 
+==3840621== 
+==3840621== HEAP SUMMARY:
+==3840621==     in use at exit: 0 bytes in 0 blocks
+==3840621==   total heap usage: 12 allocs, 12 frees, 17,300 bytes allocated
+==3840621== 
+==3840621== All heap blocks were freed -- no leaks are possible
+==3840621== 
+==3840621== For lists of detected and suppressed errors, rerun with: -s
+==3840621== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==3840627== Memcheck, a memory error detector
+==3840627== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==3840627== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+==3840627== Command: ./um ./test/test_in.um
+==3840627== 
+==3840627== 
+==3840627== HEAP SUMMARY:
+==3840627==     in use at exit: 0 bytes in 0 blocks
+==3840627==   total heap usage: 13 allocs, 13 frees, 25,516 bytes allocated
+==3840627== 
+==3840627== All heap blocks were freed -- no leaks are possible
+==3840627== 
+==3840627== For lists of detected and suppressed errors, rerun with: -s
+==3840627== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==3840631== Memcheck, a memory error detector
+==3840631== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==3840631== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+==3840631== Command: ./um ./test/test_map.um
+==3840631== 
+==3840631== 
+==3840631== HEAP SUMMARY:
+==3840631==     in use at exit: 0 bytes in 0 blocks
+==3840631==   total heap usage: 14 allocs, 14 frees, 17,328 bytes allocated
+==3840631== 
+==3840631== All heap blocks were freed -- no leaks are possible
+==3840631== 
+==3840631== For lists of detected and suppressed errors, rerun with: -s
+==3840631== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==3840637== Memcheck, a memory error detector
+==3840637== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==3840637== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+==3840637== Command: ./um ./test/test_loadp.um
+==3840637== 
+==3840637== 
+==3840637== HEAP SUMMARY:
+==3840637==     in use at exit: 0 bytes in 0 blocks
+==3840637==   total heap usage: 16 allocs, 16 frees, 17,744 bytes allocated
+==3840637== 
+==3840637== All heap blocks were freed -- no leaks are possible
+==3840637== 
+==3840637== For lists of detected and suppressed errors, rerun with: -s
+==3840637== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==3840651== Memcheck, a memory error detector
+==3840651== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==3840651== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+==3840651== Command: ./um ./test/test_unmap.um
+==3840651== 
+==3840651== 
+==3840651== HEAP SUMMARY:
+==3840651==     in use at exit: 0 bytes in 0 blocks
+==3840651==   total heap usage: 14 allocs, 14 frees, 17,308 bytes allocated
+==3840651== 
+==3840651== All heap blocks were freed -- no leaks are possible
+==3840651== 
+==3840651== For lists of detected and suppressed errors, rerun with: -s
+==3840651== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==3841243== Memcheck, a memory error detector
+==3841243== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==3841243== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+==3841243== Command: ./um ./test/test_add.um
+==3841243== 
+==3841243== 
+==3841243== HEAP SUMMARY:
+==3841243==     in use at exit: 0 bytes in 0 blocks
+==3841243==   total heap usage: 11 allocs, 11 frees, 17,284 bytes allocated
+==3841243== 
+==3841243== All heap blocks were freed -- no leaks are possible
+==3841243== 
+==3841243== For lists of detected and suppressed errors, rerun with: -s
+==3841243== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==3841247== Memcheck, a memory error detector
+==3841247== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==3841247== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+==3841247== Command: ./um ./test/test_add_edge.um
+==3841247== 
+==3841247== 
+==3841247== HEAP SUMMARY:
+==3841247==     in use at exit: 0 bytes in 0 blocks
+==3841247==   total heap usage: 11 allocs, 11 frees, 17,292 bytes allocated
+==3841247== 
+==3841247== All heap blocks were freed -- no leaks are possible
+==3841247== 
+==3841247== For lists of detected and suppressed errors, rerun with: -s
+==3841247== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==3841251== Memcheck, a memory error detector
+==3841251== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==3841251== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+==3841251== Command: ./um ./test/test_div.um
+==3841251== 
+==3841251== 
+==3841251== HEAP SUMMARY:
+==3841251==     in use at exit: 0 bytes in 0 blocks
+==3841251==   total heap usage: 11 allocs, 11 frees, 17,284 bytes allocated
+==3841251== 
+==3841251== All heap blocks were freed -- no leaks are possible
+==3841251== 
+==3841251== For lists of detected and suppressed errors, rerun with: -s
+==3841251== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==3841258== Memcheck, a memory error detector
+==3841258== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==3841258== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+==3841258== Command: ./um ./test/test_halt_verbose.um
+==3841258== 
+==3841258== 
+==3841258== HEAP SUMMARY:
+==3841258==     in use at exit: 0 bytes in 0 blocks
+==3841258==   total heap usage: 10 allocs, 10 frees, 9,108 bytes allocated
+==3841258== 
+==3841258== All heap blocks were freed -- no leaks are possible
+==3841258== 
+==3841258== For lists of detected and suppressed errors, rerun with: -s
+==3841258== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==3841261== Memcheck, a memory error detector
+==3841261== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==3841261== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+==3841261== Command: ./um ./test/test_halt.um
+==3841261== 
+==3841261== 
+==3841261== HEAP SUMMARY:
+==3841261==     in use at exit: 0 bytes in 0 blocks
+==3841261==   total heap usage: 10 allocs, 10 frees, 9,068 bytes allocated
+==3841261== 
+==3841261== All heap blocks were freed -- no leaks are possible
+==3841261== 
+==3841261== For lists of detected and suppressed errors, rerun with: -s
+==3841261== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==3841264== Memcheck, a memory error detector
+==3841264== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==3841264== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+==3841264== Command: ./um ./test/test_mov.um
+==3841264== 
+==3841264== 
+==3841264== HEAP SUMMARY:
+==3841264==     in use at exit: 0 bytes in 0 blocks
+==3841264==   total heap usage: 11 allocs, 11 frees, 17,300 bytes allocated
+==3841264== 
+==3841264== All heap blocks were freed -- no leaks are possible
+==3841264== 
+==3841264== For lists of detected and suppressed errors, rerun with: -s
+==3841264== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==3841268== Memcheck, a memory error detector
+==3841268== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==3841268== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+==3841268== Command: ./um ./test/test_mult.um
+==3841268== 
+==3841268== 
+==3841268== HEAP SUMMARY:
+==3841268==     in use at exit: 0 bytes in 0 blocks
+==3841268==   total heap usage: 11 allocs, 11 frees, 17,308 bytes allocated
+==3841268== 
+==3841268== All heap blocks were freed -- no leaks are possible
+==3841268== 
+==3841268== For lists of detected and suppressed errors, rerun with: -s
+==3841268== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==3841272== Memcheck, a memory error detector
+==3841272== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==3841272== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+==3841272== Command: ./um ./test/test_nand.um
+==3841272== 
+==3841272== 
+==3841272== HEAP SUMMARY:
+==3841272==     in use at exit: 0 bytes in 0 blocks
+==3841272==   total heap usage: 11 allocs, 11 frees, 17,304 bytes allocated
+==3841272== 
+==3841272== All heap blocks were freed -- no leaks are possible
+==3841272== 
+==3841272== For lists of detected and suppressed errors, rerun with: -s
+==3841272== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==3841276== Memcheck, a memory error detector
+==3841276== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==3841276== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+==3841276== Command: ./um ./test/test_out.um
+==3841276== 
+==3841276== 
+==3841276== HEAP SUMMARY:
+==3841276==     in use at exit: 0 bytes in 0 blocks
+==3841276==   total heap usage: 11 allocs, 11 frees, 17,308 bytes allocated
+==3841276== 
+==3841276== All heap blocks were freed -- no leaks are possible
+==3841276== 
+==3841276== For lists of detected and suppressed errors, rerun with: -s
+==3841276== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==3841280== Memcheck, a memory error detector
+==3841280== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==3841280== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+==3841280== Command: ./um ./test/test_segl.um
+==3841280== 
+==3841280== 
+==3841280== HEAP SUMMARY:
+==3841280==     in use at exit: 0 bytes in 0 blocks
+==3841280==   total heap usage: 11 allocs, 11 frees, 17,292 bytes allocated
+==3841280== 
+==3841280== All heap blocks were freed -- no leaks are possible
+==3841280== 
+==3841280== For lists of detected and suppressed errors, rerun with: -s
+==3841280== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==3841291== Memcheck, a memory error detector
+==3841291== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==3841291== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+==3841291== Command: ./um ./test/test_segs.um
+==3841291== 
+==3841291== 
+==3841291== HEAP SUMMARY:
+==3841291==     in use at exit: 0 bytes in 0 blocks
+==3841291==   total heap usage: 10 allocs, 10 frees, 9,092 bytes allocated
+==3841291== 
+==3841291== All heap blocks were freed -- no leaks are possible
+==3841291== 
+==3841291== For lists of detected and suppressed errors, rerun with: -s
+==3841291== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==3841295== Memcheck, a memory error detector
+==3841295== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==3841295== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+==3841295== Command: ./um ./test/test_in.um
+==3841295== 
+==3841295== 
+==3841295== HEAP SUMMARY:
+==3841295==     in use at exit: 0 bytes in 0 blocks
+==3841295==   total heap usage: 12 allocs, 12 frees, 25,500 bytes allocated
+==3841295== 
+==3841295== All heap blocks were freed -- no leaks are possible
+==3841295== 
+==3841295== For lists of detected and suppressed errors, rerun with: -s
+==3841295== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==3841299== Memcheck, a memory error detector
+==3841299== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==3841299== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+==3841299== Command: ./um ./test/test_map.um
+==3841299== 
+==3841299== 
+==3841299== HEAP SUMMARY:
+==3841299==     in use at exit: 0 bytes in 0 blocks
+==3841299==   total heap usage: 13 allocs, 13 frees, 17,312 bytes allocated
+==3841299== 
+==3841299== All heap blocks were freed -- no leaks are possible
+==3841299== 
+==3841299== For lists of detected and suppressed errors, rerun with: -s
+==3841299== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==3841303== Memcheck, a memory error detector
+==3841303== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==3841303== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+==3841303== Command: ./um ./test/test_loadp.um
+==3841303== 
+==3841303== 
+==3841303== HEAP SUMMARY:
+==3841303==     in use at exit: 0 bytes in 0 blocks
+==3841303==   total heap usage: 14 allocs, 14 frees, 9,536 bytes allocated
+==3841303== 
+==3841303== All heap blocks were freed -- no leaks are possible
+==3841303== 
+==3841303== For lists of detected and suppressed errors, rerun with: -s
+==3841303== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==3841306== Memcheck, a memory error detector
+==3841306== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==3841306== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+==3841306== Command: ./um ./test/test_unmap.um
+==3841306== 
+==3841306== 
+==3841306== HEAP SUMMARY:
+==3841306==     in use at exit: 0 bytes in 0 blocks
+==3841306==   total heap usage: 12 allocs, 12 frees, 9,100 bytes allocated
+==3841306== 
+==3841306== All heap blocks were freed -- no leaks are possible
+==3841306== 
+==3841306== For lists of detected and suppressed errors, rerun with: -s
+==3841306== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

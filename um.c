@@ -165,11 +165,11 @@ int main(int argc, char* argv[])
         
 
         /* execute individual program instructions */
-        uint32_t curP = UArray_length(Seq_get(mach->mem->seg_mem, 0));
-        for (mach->program_counter = 0; mach->program_counter < curP; 
-             mach->program_counter++) {
-                callExe(mach,&mach->program_counter,&curP);
-        }
+        // uint32_t curP = UArray_length(Seq_get(mach->mem->seg_mem, 0));
+        // for (mach->program_counter = 0; mach->program_counter < curP; 
+        //      mach->program_counter++) {
+        //         callExe(mach,&mach->program_counter,&curP);
+        // }
         /* free the program after use if not freed already */
         mem_free(&mach->mem);
         free(mach);
