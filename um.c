@@ -41,63 +41,63 @@
  *      The function updates the machine state accordingly, including 
  *      registers and program counters.
  */
-void callExe(Machine mach, uint32_t *line,  uint32_t *curP)
-{
-        /* initialize components of the machine */
-        uint32_t inst, opcode, value, a, b, c, *ra,*rb,*rc;
-        inst = mem_inst(mach->mem, *line);
-        opcode = getOpcode(inst);
+// void callExe(Machine mach, uint32_t *line,  uint32_t *curP)
+// {
+//         /* initialize components of the machine */
+//         uint32_t inst, opcode, value, a, b, c, *ra,*rb,*rc;
+//         inst = mem_inst(mach->mem, *line);
+//         opcode = getOpcode(inst);
         
-        /* preprocess based on the opcode */
-        if (opcode < LV){
-                setRef(inst,&a,&b,&c);
-                ra = &mach->reg[a];
-                rb = &mach->reg[b];
-                rc = &mach->reg[c];
-        } else if (opcode == LV) {
-                value = setLoad(inst,&c);
-                rc = &mach->reg[c];
-        } else {
-                exit(1);
-        }
+//         /* preprocess based on the opcode */
+//         if (opcode < LV){
+//                 setRef(inst,&a,&b,&c);
+//                 ra = &mach->reg[a];
+//                 rb = &mach->reg[b];
+//                 rc = &mach->reg[c];
+//                 if (opcode == ACTIVATE){
+//                         map(mach->mem,rb,rc);
+//                 } else if (opcode == SSTORE){
+//                         segS(mach->mem,ra,rb,rc);
+//                 } else if (opcode == SLOAD){
+//                         segL(mach->mem,ra,rb,rc);
+//                 } else if (opcode == ADD){
+//                         add(ra,rb,rc);
+//                 } else if (opcode == MUL){
+//                         mult(ra,rb,rc);
+//                 } else if (opcode == DIV){
+//                         divide(ra,rb,rc);
+//                 } else if (opcode == NAND){
+//                         nand(ra,rb,rc);
+//                 } else if (opcode == HALT){
+//                         halt(&mach->mem);
+//                         halt_exit(&mach);
+//                 } else if (opcode == CMOV){
+//                         move(ra,rb,rc);
+//                 } else if (opcode == INACTIVATE){
+//                         unmap(mach->mem,rc);
+//                 } else if (opcode == OUT){
+//                         out(rc);
+//                 } else if (opcode == IN){
+//                         in(rc);
+//                 } else if (opcode == LOADP){
+//                         if (*rb == 0) {
+//                                 *line = *rc - 1;
+//                         } else {
+//                                 *line = *rc - 1; /*-1 to handle i++;*/
+//                                 *curP = loadP(mach->mem,rb);
+//                         }
+//                 }
+//         } else if (opcode == LV) {
+//                 value = setLoad(inst,&c);
+//                 rc = &mach->reg[c];
+//                 lv(value,rc);
+//         } else {
+//                 exit(1);
+//         }
         
-        /* call specific execution functions */
-        if (opcode == CMOV){
-                move(ra,rb,rc);
-        } else if (opcode == SLOAD){
-                segL(mach->mem,ra,rb,rc);
-        } else if (opcode == SSTORE){
-                segS(mach->mem,ra,rb,rc);
-        } else if (opcode == ADD){
-                add(ra,rb,rc);
-        } else if (opcode == MUL){
-                mult(ra,rb,rc);
-        } else if (opcode == DIV){
-                divide(ra,rb,rc);
-        } else if (opcode == NAND){
-                nand(ra,rb,rc);
-        } else if (opcode == HALT){
-                halt(&mach->mem);
-                halt_exit(&mach);
-        } else if (opcode == ACTIVATE){
-                map(mach->mem,rb,rc);
-        } else if (opcode == INACTIVATE){
-                unmap(mach->mem,rc);
-        } else if (opcode == OUT){
-                out(rc);
-        } else if (opcode == IN){
-                in(rc);
-        } else if (opcode == LOADP){
-                if (*rb == 0) {
-                        *line = *rc - 1;
-                } else {
-                        *line = *rc - 1; /*-1 to handle i++;*/
-                        *curP = loadP(mach->mem,rb);
-                }
-        } else if (opcode == LV){
-                lv(value,rc);
-        } 
-} 
+//         /* call specific execution functions */
+        
+// } 
 
 /********** read_code ********
  *
@@ -150,27 +150,79 @@ int main(int argc, char* argv[])
         }
 
         /* innitialize the universal machine */
-        Machine mach = malloc(sizeof(*mach));
-        assert(mach != NULL);
-        for (uint32_t i = 0; i < NUM_REG; i++){
-                mach->reg[i] = 0;
-        }
+
 
 
         /*load program*/
         FILE *fp = fopen(argv[1], "r");
         assert(fp != NULL);
-        mach->mem = mem_init(read_code(fp));
+        Mem_T mem = mem_init(read_code(fp));
         fclose(fp);
         
 
         /* execute individual program instructions */
-        // uint32_t curP = UArray_length(Seq_get(mach->mem->seg_mem, 0));
-        // for (mach->program_counter = 0; mach->program_counter < curP; 
-        //      mach->program_counter++) {
-        //         callExe(mach,&mach->program_counter,&curP);
-        // }
+        uint32_t len = mem->seg_mem[0].length;
+        printf("%u\n",len);
+
+        uint32_t inst, opcode, value, a, b, c, *ra,*rb,*rc;
+        uint32_t reg[NUM_REG];
+        for (uint32_t i = 0; i < NUM_REG; i++){
+                reg[i] = 0;
+        }
+        
+        uint32_t counter;
+
+        for (counter = 0;  counter < len; counter++) {
+                inst = mem_inst(mem, counter);
+                opcode = getOpcode(inst);
+                if (opcode < LV){
+                        setRef(inst,&a,&b,&c);
+                        ra = &reg[a];
+                        rb = &reg[b];
+                        rc = &reg[c];
+                        if (opcode == ACTIVATE){
+                                map(mem,rb,rc);
+                        } else if (opcode == SSTORE){
+                                segS(mem,ra,rb,rc);
+                        } else if (opcode == SLOAD){
+                                segL(mem,ra,rb,rc);
+                        } else if (opcode == ADD){
+                                add(ra,rb,rc);
+                        } else if (opcode == MUL){
+                                mult(ra,rb,rc);
+                        } else if (opcode == DIV){
+                                divide(ra,rb,rc);
+                        } else if (opcode == NAND){
+                                nand(ra,rb,rc);
+                        } else if (opcode == HALT){
+                                mem_free(&mem);
+                                exit(0);
+                        } else if (opcode == CMOV){
+                                move(ra,rb,rc);
+                        } else if (opcode == INACTIVATE){
+                                unmap(mem,rc);
+                        } else if (opcode == OUT){
+                                out(rc);
+                        } else if (opcode == IN){
+                                in(rc);
+                        } else if (opcode == LOADP){
+                                if (*rb == 0) {
+                                        counter = *rc - 1;
+                                } else {
+                                        counter = *rc - 1; /*-1 to handle i++;*/
+                                        len = loadP(mem,rb);
+                                }
+                        }
+                } else if (opcode == LV) {
+                        value = setLoad(inst,&c);
+                        rc = &reg[c];
+                        lv(value,rc);
+                } else {
+                        exit(1);
+                }
+        }
         /* free the program after use if not freed already */
-        mem_free(&mach->mem);
-        free(mach);
+        //mem_free(&mach->mem);
+        mem_free(&mem);
+        exit(0);
 }

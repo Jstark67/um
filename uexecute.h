@@ -33,7 +33,7 @@ typedef struct Machine {
         /* 8 32 bit registers */
         uint32_t reg[NUM_REG];
         /* program counter */
-        uint32_t program_counter;
+        uint32_t C;
 } *Machine;
 
 /* opcode for all executions */
