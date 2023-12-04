@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <stdint.h>
 
+// #include "bitpack.h"
 
 
 
@@ -28,4 +29,5 @@ uint32_t getOpcode(uint32_t inst);
 void setRef(uint32_t inst, uint32_t *ra,uint32_t *rb,uint32_t *rc);
 uint32_t setLoad(uint32_t inst, uint32_t *ra);
 uint32_t Bitpack_getu(uint32_t word, unsigned width, unsigned lsb);
+
 #endif

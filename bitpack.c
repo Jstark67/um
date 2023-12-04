@@ -13,7 +13,7 @@
  * that can shift by 64 bits.
  */
 
-Except_T Bitpack_Overflow = { "Overflow packing bits" };
+
 
 static inline uint64_t shl(uint64_t word, unsigned bits)
 {
@@ -50,33 +50,15 @@ static inline int64_t sra(uint64_t word, unsigned bits)
         return ((int64_t) word) >> bits; 
 }
 
-/****************************************************************/
-bool Bitpack_fitss( int64_t n, unsigned width)
+
+
+uint32_t Bitpack_getu(uint64_t word, unsigned width, unsigned lsb)
 {
 
-        int64_t narrow = sra(shl(n, 64 - width),
-                             64 - width); 
-        return narrow == n;
-}
 
-bool Bitpack_fitsu(uint64_t n, unsigned width)
-{
-        assert(width <= 64);
-        /* thanks to Jai Karve and John Bryan  */
-        /* clever shortcut instead of 2 shifts */
-        return (n<<width) == 0; 
-}
 
-/****************************************************************/
-
-int64_t Bitpack_gets(uint64_t word, unsigned width, unsigned lsb)
-{
-        assert(width <= 64);
-        if (width == 0) return 0;    /* avoid capturing unknown sign bit    */
-
-        unsigned hi = lsb + width; /* one beyond the most significant bit */
-        assert(hi <= 64);
-        return (word>>(64 - hi)) << (64 - width);
+        /* different type of right shift */
+        return (word>>(32 - (lsb + width))) << (32 - width) ;
 }
 
 uint64_t Bitpack_getu(uint64_t word, unsigned width, unsigned lsb)
@@ -85,27 +67,6 @@ uint64_t Bitpack_getu(uint64_t word, unsigned width, unsigned lsb)
         unsigned hi = lsb + width; /* one beyond the most significant bit */
         assert(hi <= 64);
         /* different type of right shift */
-        return (word>>(64 - hi)) << (64 - width) ;
-}
-
-/****************************************************************/
-uint64_t Bitpack_newu(uint64_t word, unsigned width, unsigned lsb,
-                      uint64_t value)
-{
-        unsigned hi = lsb + width; /* one beyond the most significant bit */
-        if (!Bitpack_fitsu(value, width))
-                RAISE(Bitpack_Overflow);
-        return shl(shr(word, hi), hi)                 /* high part */
-                | shr(shl(word, 64 - lsb), 64 - lsb)  /* low part  */
-                | (value << lsb);                     /* new part  */
-}
-
-uint64_t Bitpack_news(uint64_t word, unsigned width, unsigned lsb,
-                      int64_t value)
-{
-        assert(width <= 64);
-        if (!Bitpack_fitss(value, width))
-                RAISE(Bitpack_Overflow);
-        /* thanks to Michael Sackman and Gilad Gray */
-        return Bitpack_newu(word, width, lsb, Bitpack_getu(value, width, 0));
+        return shr(shl(word, 64 - hi),
+                   64 - width); 
 }

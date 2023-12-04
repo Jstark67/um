@@ -3,3 +3,22 @@ benchmark       time        rel St      rel Pre         Note
 small           7.27        1.000       1.000           We already used -O2 
 large           182.64      1.000       1.000           during HW6
 small I ref     40,824,472,134
+
+small           4.87        0.670       0.670           eliminated bitpack
+large           129.05      0.707       0.707
+small I ref     27,402,047,280
+
+small           2.61        0.359       0.536           datastructure overhaul
+large           64.73       0.354       0.502           changed order of exe. 
+small I ref     17,019,724,990           `              loop by frequency
+                                                        moved loop to main
+                                                        removed asserts
+
+small           2.11        0.290       0.808           removed more asserts
+large           52.70       0.289       0.814           nolonger need uexe.
+small I ref     14,484,308,995           `              
+                                                        
+small           0.72        0.099       0.341           made bitpack macro
+large           17.88       0.098       0.339           no longer need uinterp.
+small I ref     4,126,657,534           `              
+                                                        

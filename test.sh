@@ -1,7 +1,7 @@
 #!/bin/bash
 
 make
-
+use comp40
 echo "test add normal"
 valgrind --log-fd=9 9>>valgrind_output.log ./um ./test/test_add.um > output.txt
 um ./test/test_add.um > output1.txt
@@ -90,5 +90,5 @@ valgrind --log-fd=9 9>>valgrind_output.log ./um ./test/test_unmap.um > output.tx
 um ./test/test_unmap.um > output1.txt
 diff output.txt output1.txt
 
-
+rm output.txt output1.txt
 

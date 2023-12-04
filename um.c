@@ -1,170 +1,157 @@
-/**************************************************************
- *
- *                     um.c
- *
- *     Assignment: HW6 um
- *     Authors:  David Chen and Sam Hu
- *     Date:  Nov 20th
- *
- *     summary:
- *      
- *     um.c contains driver functions for the universal machine. The
- *     program reads in a list of program instructions, store them 
- *     in a virtual memory system and execute them individually. 
- *
- **************************************************************/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <uarray.h>
-#include "uinterprate.h"
-#include "umemory.h"
-#include "uexecute.h"
+#include <assert.h>
+#include <string.h>
 
 
 #define CMD_SIZE 4
 #define NUM_REG 8
 
-/* callExe (Call Execute)
- * Executes an instruction in the machine's memory based on its opcode
- * Params: 
- *      - Machine mach: The machine instance containing the state, memory, 
-        and registers
- *      - uint32_t *line: Pointer to the program counter
- *      - uint32_t *curP: Pointer to the length of the program instructions
- * Return: 
- *      - void
- * Description: 
- *      This function decodes and executes an instruction from the machine's
- *      memory. It retrieves the instruction from the current line, 
- *      decodes its opcode, and executes the corresponding operation.
- *      The function updates the machine state accordingly, including 
- *      registers and program counters.
- */
-// void callExe(Machine mach, uint32_t *line,  uint32_t *curP)
-// {
-//         /* initialize components of the machine */
-//         uint32_t inst, opcode, value, a, b, c, *ra,*rb,*rc;
-//         inst = mem_inst(mach->mem, *line);
-//         opcode = getOpcode(inst);
-        
-//         /* preprocess based on the opcode */
-//         if (opcode < LV){
-//                 setRef(inst,&a,&b,&c);
-//                 ra = &mach->reg[a];
-//                 rb = &mach->reg[b];
-//                 rc = &mach->reg[c];
-//                 if (opcode == ACTIVATE){
-//                         map(mach->mem,rb,rc);
-//                 } else if (opcode == SSTORE){
-//                         segS(mach->mem,ra,rb,rc);
-//                 } else if (opcode == SLOAD){
-//                         segL(mach->mem,ra,rb,rc);
-//                 } else if (opcode == ADD){
-//                         add(ra,rb,rc);
-//                 } else if (opcode == MUL){
-//                         mult(ra,rb,rc);
-//                 } else if (opcode == DIV){
-//                         divide(ra,rb,rc);
-//                 } else if (opcode == NAND){
-//                         nand(ra,rb,rc);
-//                 } else if (opcode == HALT){
-//                         halt(&mach->mem);
-//                         halt_exit(&mach);
-//                 } else if (opcode == CMOV){
-//                         move(ra,rb,rc);
-//                 } else if (opcode == INACTIVATE){
-//                         unmap(mach->mem,rc);
-//                 } else if (opcode == OUT){
-//                         out(rc);
-//                 } else if (opcode == IN){
-//                         in(rc);
-//                 } else if (opcode == LOADP){
-//                         if (*rb == 0) {
-//                                 *line = *rc - 1;
-//                         } else {
-//                                 *line = *rc - 1; /*-1 to handle i++;*/
-//                                 *curP = loadP(mach->mem,rb);
-//                         }
-//                 }
-//         } else if (opcode == LV) {
-//                 value = setLoad(inst,&c);
-//                 rc = &mach->reg[c];
-//                 lv(value,rc);
-//         } else {
-//                 exit(1);
-//         }
-        
-//         /* call specific execution functions */
-        
-// } 
+typedef enum Um_opcode {
+        CMOV = 0, SLOAD, SSTORE, ADD, MUL, DIV,
+        NAND, HALT, ACTIVATE, INACTIVATE, OUT, IN, LOADP, LV
+} Um_opcode;
 
-/********** read_code ********
- *
- * Reads file input and return a Uarray of program instructions
- *
- * Parameters:
- *      FILE *fp: input stream that contains program instructions
- *
- * Return: UArray_T of uint32_ts: program instructions
- * 
- * Expects
- *      input must not be NULL
- * Notes:
- *      Will CRE if input is NULL
- ************************/
-UArray_T read_code(FILE *fp)
+
+#define OP_LEN 4
+#define REG_LEN 3
+#define VAL_LEN 25
+#define Bitpack_getu(word, width, lsb) (((word) << (32 - ((lsb) + (width)))) >> (32 - (width)))
+
+typedef struct Memory
 {
-        /* Error Handling */
-        assert(fp != NULL);
-        
-        /* Process input and find the number of instructions */
-        fseek(fp,0,SEEK_END);
-        int length = ftell(fp) / CMD_SIZE;
-        assert(ftell(fp) != 0);
-        rewind(fp);
+        uint32_t *mem;
+        uint32_t length;
+} *Memory;
 
-        /* Create an empty UArray and innitialize it */
-        UArray_T program = UArray_new(length,CMD_SIZE);
-        for (long i = 0; i < length; i++) {
-                uint32_t code = 0;
-                for (int j = 0; j < CMD_SIZE; j++) { /* big endian insertion*/
-                        code = code << 8;
-                        code += (int)fgetc(fp);
-                }
-                uint32_t *cur_code = UArray_at(program, i);
-                *cur_code = code;
-        }
+typedef struct Mem_T {
+
+        Memory seg_mem;
+        uint32_t *unmapped;
+        uint32_t capacity;
+        uint32_t size;
+        uint32_t ucap;
+        uint32_t usize;
         
-        return program;
+} *Mem_T;
+
+
+
+
+
+
+
+
+
+
+static inline void mem_free(Mem_T *mem)
+{
+        for(uint32_t i = 0; i < (*mem)->size; i++) {
+                if((*mem)->seg_mem[i].mem) {free((*mem)->seg_mem[i].mem); (*mem)->seg_mem[i].mem = NULL;}
+        }free((*mem)->seg_mem);free((*mem)->unmapped);free(*mem);
 }
 
 
-/* main */
+
+static inline uint32_t mem_map(uint32_t length, Mem_T mem)
+{
+        if (length == 0){
+                if(mem->usize){
+                        return mem->unmapped[--mem->usize];
+                }else {
+                        return ++mem->size;
+                }
+        }
+
+        uint32_t* Seg = calloc(length, 4);
+        assert(Seg);
+        uint32_t idx;
+        if (mem->usize) {
+                idx = mem->unmapped[--mem->usize];
+        } else {
+                
+                if (mem->size == mem->capacity) {
+                        mem->capacity *= 2;
+                        mem->seg_mem = realloc(mem->seg_mem, mem->capacity * 16); 
+                        // assert(mem->seg_mem);
+                }
+                idx = mem->size++;
+        }
+        mem->seg_mem[idx].mem = Seg;
+        mem->seg_mem[idx].length = length;
+        return idx;
+}
+
+static inline void mem_unmap(Mem_T mem, uint32_t idx){
+        if (mem->usize == mem->ucap) {
+                mem->ucap *= 2;
+                mem->unmapped = realloc(mem->unmapped,mem->ucap * sizeof(uint32_t));
+                // assert(mem->unmapped);
+        }
+        mem->unmapped[mem->usize++] = idx;
+        if(mem->seg_mem[idx].mem != NULL) {
+                free(mem->seg_mem[idx].mem);
+                mem->seg_mem[idx].mem = NULL;
+        }
+}
+
+// static inline uint32_t mem_loadP(Mem_T mem, uint32_t idx)
+// {
+//         int size = mem->seg_mem[idx].length * 4;
+//         free(mem->seg_mem[0].mem);
+//         mem->seg_mem[0].mem = malloc(size);
+//         memcpy(mem->seg_mem[0].mem, mem->seg_mem[idx].mem, size);
+//         return mem->seg_mem[idx].length;
+// }
+
+
+
+
 int main(int argc, char* argv[])
 {
-        /* handle false input */
         if (argc != 2) {
                 fprintf(stderr, "Usage: %s [filename]\n", argv[0]);
                 exit(1);
         }
 
-        /* innitialize the universal machine */
 
 
 
-        /*load program*/
         FILE *fp = fopen(argv[1], "r");
-        assert(fp != NULL);
-        Mem_T mem = mem_init(read_code(fp));
+        assert(fp);
+        fseek(fp,0,SEEK_END);
+        uint32_t *prog = malloc(ftell(fp));
+        uint32_t length = ftell(fp) / CMD_SIZE;
+        rewind(fp);
+
+        for (long i = 0; i < length; i++) {
+                prog[i] = 0;
+                for (int j = 0; j < CMD_SIZE; j++) { 
+                        prog[i] = prog[i] << 8;
+                        prog[i] += (int)fgetc(fp);
+                }
+
+        }
+
+        Mem_T mem = malloc(32); 
+        assert(mem);
+        mem->capacity = 10;
+        mem->size = 1;
+        mem->ucap = 10;
+        mem->usize = 0;
+        mem->seg_mem = malloc(mem->capacity * 16);
+        mem->unmapped = malloc(mem->ucap * 4);
+        mem->seg_mem[0].mem = prog;
+        mem->seg_mem[0].length= length;
+
         fclose(fp);
         
 
-        /* execute individual program instructions */
         uint32_t len = mem->seg_mem[0].length;
-        printf("%u\n",len);
 
-        uint32_t inst, opcode, value, a, b, c, *ra,*rb,*rc;
+        uint32_t inst, opcode, value, a, b, c;
         uint32_t reg[NUM_REG];
         for (uint32_t i = 0; i < NUM_REG; i++){
                 reg[i] = 0;
@@ -173,56 +160,115 @@ int main(int argc, char* argv[])
         uint32_t counter;
 
         for (counter = 0;  counter < len; counter++) {
-                inst = mem_inst(mem, counter);
-                opcode = getOpcode(inst);
+                inst = mem->seg_mem[0].mem[counter];
+                opcode = Bitpack_getu(inst,OP_LEN,28);
                 if (opcode < LV){
-                        setRef(inst,&a,&b,&c);
-                        ra = &reg[a];
-                        rb = &reg[b];
-                        rc = &reg[c];
-                        if (opcode == ACTIVATE){
-                                map(mem,rb,rc);
-                        } else if (opcode == SSTORE){
-                                segS(mem,ra,rb,rc);
-                        } else if (opcode == SLOAD){
-                                segL(mem,ra,rb,rc);
-                        } else if (opcode == ADD){
-                                add(ra,rb,rc);
-                        } else if (opcode == MUL){
-                                mult(ra,rb,rc);
-                        } else if (opcode == DIV){
-                                divide(ra,rb,rc);
-                        } else if (opcode == NAND){
-                                nand(ra,rb,rc);
-                        } else if (opcode == HALT){
-                                mem_free(&mem);
-                                exit(0);
-                        } else if (opcode == CMOV){
-                                move(ra,rb,rc);
-                        } else if (opcode == INACTIVATE){
-                                unmap(mem,rc);
-                        } else if (opcode == OUT){
-                                out(rc);
-                        } else if (opcode == IN){
-                                in(rc);
-                        } else if (opcode == LOADP){
-                                if (*rb == 0) {
-                                        counter = *rc - 1;
-                                } else {
-                                        counter = *rc - 1; /*-1 to handle i++;*/
-                                        len = loadP(mem,rb);
-                                }
-                        }
+                        a = Bitpack_getu(inst,REG_LEN,REG_LEN*2);
+                        b = Bitpack_getu(inst,REG_LEN,REG_LEN);
+                        c = Bitpack_getu(inst,REG_LEN,0);
+
+
+                        switch(opcode) {
+    case ACTIVATE:
+        reg[b] = mem_map(reg[c], mem);
+        break;
+    case SSTORE:
+        mem->seg_mem[reg[a]].mem[reg[b]] = reg[c];
+        break;
+    case SLOAD:
+        reg[a] = mem->seg_mem[reg[b]].mem[reg[c]];
+        break;
+    case ADD:
+        reg[a] = reg[b] + reg[c];
+        break;
+    case MUL:
+        reg[a] = reg[b] * reg[c];
+        break;
+    case DIV:
+        reg[a] = reg[b] / reg[c];
+        break;
+    case NAND:
+        reg[a] = ~(reg[b] & reg[c]);
+        break;
+    case HALT:
+        mem_free(&mem);
+        exit(0);
+        break;
+    case CMOV:
+        if (reg[c]) reg[a] = reg[b];
+        break;
+    case INACTIVATE:
+        mem_unmap(mem, reg[c]);
+        break;
+    case OUT:
+        fputc(reg[c], stdout);
+        break;
+    case IN:
+        reg[c] = fgetc(stdin);
+        break;
+    case LOADP:
+        counter = reg[c] - 1; 
+        if (reg[b]) {
+            int size = mem->seg_mem[reg[b]].length * sizeof(uint32_t);
+            free(mem->seg_mem[0].mem);
+            mem->seg_mem[0].mem = malloc(size);
+            memcpy(mem->seg_mem[0].mem, mem->seg_mem[reg[b]].mem, size);
+            len = mem->seg_mem[reg[b]].length;
+        }
+        break;
+    // Add additional cases for other opcodes
+    default:
+        // Handle unknown opcode
+        break;
+}
+
+
+                        // if (opcode == ACTIVATE){
+                        //         reg[b] = mem_map(reg[c],mem);
+                        // } else if (opcode == SSTORE){
+                        //         mem->seg_mem[reg[a]].mem[reg[b]]= reg[c];
+                        // } else if (opcode == SLOAD){
+                        //         reg[a] = mem->seg_mem[reg[b]].mem[reg[c]];
+                        // } else if (opcode == ADD){
+                        //         reg[a] = reg[b] + reg[c];
+                        // } else if (opcode == MUL){
+                        //         reg[a] = reg[b] * reg[c];
+                        // } else if (opcode == DIV){
+                        //         reg[a] = reg[b] / reg[c];
+                        // } else if (opcode == NAND){
+                        //         reg[a] = ~(reg[b] & reg[c]);
+                        // } else if (opcode == HALT){
+                        //         mem_free(&mem);
+                        //         exit(0);
+                        // } else if (opcode == CMOV){
+                        //         if (reg[c]) reg[a] = reg[b];
+                        // } else if (opcode == INACTIVATE){
+                        //         mem_unmap(mem,reg[c]);
+                        // } else if (opcode == OUT){
+                        //         fputc(reg[c],stdout);
+                        // } else if (opcode == IN){
+                        //         reg[c] = fgetc(stdin);
+                        // } else if (opcode == LOADP){
+                        //         counter = reg[c]-1; 
+                        //         if (reg[b]){
+                        //                 // len = mem_loadP(mem, reg[b]);
+                        //                 int size = mem->seg_mem[reg[b]].length * 4;
+                        //                 free(mem->seg_mem[0].mem);
+                        //                 mem->seg_mem[0].mem = malloc(size);
+                        //                 memcpy(mem->seg_mem[0].mem, mem->seg_mem[reg[b]].mem, size);
+                        //                 len = mem->seg_mem[reg[b]].length;
+                        //         }
+                        // }
                 } else if (opcode == LV) {
-                        value = setLoad(inst,&c);
-                        rc = &reg[c];
-                        lv(value,rc);
+                        value = Bitpack_getu(inst,VAL_LEN,0);
+                        reg[Bitpack_getu(inst,REG_LEN,VAL_LEN)] = value;
+
                 } else {
                         exit(1);
                 }
         }
-        /* free the program after use if not freed already */
-        //mem_free(&mach->mem);
+       
         mem_free(&mem);
+        
         exit(0);
 }

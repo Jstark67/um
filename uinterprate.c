@@ -21,7 +21,7 @@
 
 uint32_t Bitpack_getu(uint32_t word, unsigned width, unsigned lsb)
 {
-        return (word<<(32 - (lsb + width))) >> (32 - width);
+        return (word <<(32 - (lsb + width))) >> (32 - width);
 }
 
 /* getOpcode
@@ -49,9 +49,11 @@ uint32_t getOpcode(uint32_t inst)
  */
 void setRef(uint32_t inst, uint32_t *ra,uint32_t *rb,uint32_t *rc)
 {
+        
         *ra = Bitpack_getu(inst,REG_LEN,REG_LEN*2);
         *rb = Bitpack_getu(inst,REG_LEN,REG_LEN);
         *rc = Bitpack_getu(inst,REG_LEN,0);
+        //printf("setRef: %u \n", *rb);
 }
 
 

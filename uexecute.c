@@ -26,6 +26,8 @@
 */
 void move(uint32_t *ra, uint32_t *rb, uint32_t *rc)
 {
+                // printf("move: %u\n", *rb);
+
         if(*rc != 0){
                 *ra = *rb;
         }
@@ -43,7 +45,15 @@ void move(uint32_t *ra, uint32_t *rb, uint32_t *rc)
  *      - void
  */
 void segL(Mem_T mem, uint32_t *ra, uint32_t *rb, uint32_t *rc){
+        // assert(*rb != 134465);
+        // printf("segL RB: %u\n", *rb);
+        // printf("segL RA: %u\n", *ra);
+        // printf("segL RC: %u\n", *rc);
+        // printf("segment length: %u\n", mem->seg_mem[0].length);
         *ra = mem_load(mem,*rb,*rc);
+        // printf("segment: %u\n", mem->seg_mem[*rb].mem[*rc]);
+        // printf("segL2ra: %u\n", *ra);
+        // printf("segL2rb: %u\n", *rb);
 }
 
 /* segS (Segment Store)
@@ -58,6 +68,8 @@ void segL(Mem_T mem, uint32_t *ra, uint32_t *rb, uint32_t *rc){
  *      - void
  */
 void segS(Mem_T mem,uint32_t *ra, uint32_t *rb, uint32_t *rc){
+        // printf("segS: %u\n", *rb);
+
         mem_store(mem,*ra,*rb,*rc);
 }
 
@@ -72,6 +84,8 @@ void segS(Mem_T mem,uint32_t *ra, uint32_t *rb, uint32_t *rc){
  */
 void add(uint32_t *ra, uint32_t *rb, uint32_t *rc)
 {
+        // printf("add: %u\n", *rb);
+
         *ra = *rb + *rc;
 }
 
@@ -86,6 +100,8 @@ void add(uint32_t *ra, uint32_t *rb, uint32_t *rc)
  */
 void mult(uint32_t *ra, uint32_t *rb, uint32_t *rc)
 {
+        // printf("mult: %u\n", *rb);
+
         *ra = *rb * *rc;
 }
 
@@ -101,6 +117,8 @@ void mult(uint32_t *ra, uint32_t *rb, uint32_t *rc)
  */
 void divide(uint32_t *ra, uint32_t *rb, uint32_t *rc)
 {
+        // printf("divide: %u\n", *rb);
+
         *ra = *rb / *rc;
 }
 
@@ -116,6 +134,8 @@ void divide(uint32_t *ra, uint32_t *rb, uint32_t *rc)
  */
 void nand(uint32_t *ra, uint32_t *rb, uint32_t *rc)
 {
+        // printf("nand: %u\n", *rb);
+
         *ra = ~(*rb & *rc);
 }
 
@@ -144,7 +164,10 @@ void halt(Mem_T *mem)
  */
 void map(Mem_T mem, uint32_t *rb, uint32_t *rc)
 {
+        
         *rb = mem_map(*rc, mem);
+        // printf("map: %u\n", *rb);
+
 }
 
 /* unmap
@@ -197,6 +220,8 @@ void in(uint32_t *rc)
  */
 int loadP(Mem_T mem, uint32_t *rb)
 {
+//        printf("loadp: %u\n", *rb);
+
         return mem_loadP(mem,*rb);
 }
 
