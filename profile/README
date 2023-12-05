@@ -1,0 +1,19 @@
+Authors: David Chen (zchen18), Sam Hu (khu04)
+
+External Help: We received help from Ayda during her office hours
+
+Most time spent:
+We spent most of our time debugging after we switched from a Hanson sequence
+to a C array approach for our virtual memory system. 
+
+Assembly code explanation:
+We have already moved most of the functions into main, and looking at main
+ (~99.x% of Ir at this point), we fouund that the most frequently called 
+ instructions were mostly fetching the instruction, using inline bitpack/ 
+ bitshift to get values from instruction, comparison (if and switch cases), or
+  malloc/calloc. none of these can be optimized more as they are necessary 
+  and/or have been reduces to the simpliest form we know.
+
+Hours for analyzing the problem: 5 hours
+
+Hours for solving the problem: 15 hours

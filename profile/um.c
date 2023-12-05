@@ -9,7 +9,7 @@
 
 #define CMD_SIZE 4
 #define NUM_REG 8
-#define VALUE_FLAG 33554431
+
 typedef enum Um_opcode {
         CMOV = 0, SLOAD, SSTORE, ADD, MUL, DIV,
         NAND, HALT, ACTIVATE, INACTIVATE, OUT, IN, LOADP, LV
@@ -42,10 +42,9 @@ uint32_t inst, opcode, value, a, b, c;
 
 static inline void mem_free()
 {
-        size++;
-        for(uint32_t i = 0; i < size; i++) {
+        for(uint32_t i = 0; i < size + 1; i++) {
                 // printf("index: %u\n", i);
-                if(mem[i] != NULL) {free(mem[i]); }
+                if(mem[i] != NULL) {free(mem[i]); mem[i] = NULL;}
         }free(unmapped); 
 }
 
@@ -53,6 +52,13 @@ static inline void mem_free()
 
 static inline uint32_t mem_map(uint32_t len)
 {
+        if (len == 0){
+                if(usize){
+                        return unmapped[--usize];
+                }else {
+                        return ++size;
+                }
+        }
 
         // uint32_t* Seg = calloc(len + 1, 4);
         // assert(Seg);
@@ -63,7 +69,7 @@ static inline uint32_t mem_map(uint32_t len)
         } else {
                 
                 if (size >= capacity) {
-                        capacity = capacity * 4 + 4;
+                        capacity = capacity * 2 + 2;
                         mem = realloc(mem, capacity * 8); 
                         assert(mem);
                 }
@@ -76,12 +82,12 @@ static inline uint32_t mem_map(uint32_t len)
 
 static inline void mem_unmap(uint32_t idx){
         if (usize == ucap) {
-                ucap = ucap * 4 + 4;
+                ucap = ucap * 2 + 2;
                 unmapped = realloc(unmapped,ucap * sizeof(uint32_t));
                 // assert(unmapped);
         }
         unmapped[usize++] = idx;
-        if(mem[idx]) {
+        if(mem[idx] != NULL) {
                 free(mem[idx]);
                 mem[idx] = NULL;
         }
@@ -107,13 +113,13 @@ int main(int argc, char* argv[])
         FILE *fp = fopen(argv[1], "r");
         assert(fp);
 
-        uint32_t *prog = calloc(num_words + 1, sizeof(uint32_t));
+        uint32_t *prog = calloc(num_words + 1, 4);
         uint32_t len = num_words;
 
         
 
         
-       capacity = 1;
+       capacity = 10;
        size = 1;
        ucap = 1;
        usize = 0;
@@ -123,90 +129,50 @@ int main(int argc, char* argv[])
        mem[0] = calloc(len + 1, 4);
        mem[0][0] = len;
        for (long i = 0; i < len; i++) {
-                prog[i] = 0;
-
-                int ch1 = fgetc(fp);
-                int ch2 = fgetc(fp);
-                int ch3 = fgetc(fp);
-                int ch4 = fgetc(fp);
-                prog[i] = ((ch1 << 24) | (ch2 << 16) | (ch3 << 8) | ch4);
-                // for (int j = 0; j < CMD_SIZE; j++) { 
-                //         prog[i] = prog[i] << 8;
-                //         prog[i] += (int)fgetc(fp);
-                // }
-                 mem[0][i + 1] = prog[i];
+                for (int j = 0; j < CMD_SIZE; j++) { 
+                        prog[i] = prog[i] << 8;
+                        prog[i] += (int)fgetc(fp);
+                }
+                mem[0][i + 1] = prog[i];
 
         }
+       printf("%u\n", mem[0][1]);
 //        length[0] = len;
 
         fclose(fp);
-        
 
-        
-
-        
-        setbuf(stdin,NULL);
-        setbuf(stdout, NULL);
-
-        
         uint32_t counter = 1;
-        uint32_t *program = mem[0];
         // printf("length %u\n", len);
         while (counter <= len) {
-                inst = program[counter];
+                inst = mem[0][counter];
                 opcode = inst >> 28;
                 // printf("%u\n", opcode);
                 if (opcode < LV){
                         // printf("inside: %u\n", opcode);
-                        
+                        a = inst << 23 >>29;
+                        b = inst << 26 >>29;
+                        c = inst << 29 >>29;
 
                         switch(opcode) {
-                                case SLOAD:
-                                a = Bitpack_getu(inst,REG_LEN,REG_LEN*2);
-                                b = Bitpack_getu(inst,REG_LEN,REG_LEN);
-                                c = Bitpack_getu(inst,REG_LEN,0);
-                                        reg[a] = mem[reg[b]][reg[c]+1];
-                                        break;
-                                case SSTORE:
-                                a = Bitpack_getu(inst,REG_LEN,REG_LEN*2);
-                                b = Bitpack_getu(inst,REG_LEN,REG_LEN);
-                                c = Bitpack_getu(inst,REG_LEN,0);
-                                        mem[reg[a]][reg[b]+1] = reg[c];
-                                        break;
                                 case ACTIVATE:
-                                b = Bitpack_getu(inst,REG_LEN,REG_LEN);
-                                c = Bitpack_getu(inst,REG_LEN,0);
                                         reg[b] = mem_map(reg[c]);
                                         break;
-
-                                case INACTIVATE:
-
-                                c = Bitpack_getu(inst,REG_LEN,0);
-                                        mem_unmap(reg[c]);
+                                case SSTORE:
+                                        mem[reg[a]][reg[b]+1] = reg[c];
                                         break;
-
+                                case SLOAD:
+                                        reg[a] = mem[reg[b]][reg[c]+1];
+                                        break;
                                 case ADD:
-                                a = Bitpack_getu(inst,REG_LEN,REG_LEN*2);
-                                b = Bitpack_getu(inst,REG_LEN,REG_LEN);
-                                c = Bitpack_getu(inst,REG_LEN,0);
                                         reg[a] = reg[b] + reg[c];
                                         break;
                                 case MUL:
-                                a = Bitpack_getu(inst,REG_LEN,REG_LEN*2);
-                                b = Bitpack_getu(inst,REG_LEN,REG_LEN);
-                                c = Bitpack_getu(inst,REG_LEN,0);
                                         reg[a] = reg[b] * reg[c];
                                         break;
                                 case DIV:
-                                a = Bitpack_getu(inst,REG_LEN,REG_LEN*2);
-                                b = Bitpack_getu(inst,REG_LEN,REG_LEN);
-                                c = Bitpack_getu(inst,REG_LEN,0);
                                         reg[a] = reg[b] / reg[c];
                                         break;
                                 case NAND:
-                                a = Bitpack_getu(inst,REG_LEN,REG_LEN*2);
-                                b = Bitpack_getu(inst,REG_LEN,REG_LEN);
-                                c = Bitpack_getu(inst,REG_LEN,0);
                                         reg[a] = ~( reg[b] & reg[c]);
                                         break;
                                 case HALT:
@@ -214,48 +180,41 @@ int main(int argc, char* argv[])
                                         exit(0);
                                         break;
                                 case CMOV:
-                                a = Bitpack_getu(inst,REG_LEN,REG_LEN*2);
-                                b = Bitpack_getu(inst,REG_LEN,REG_LEN);
-                                c = Bitpack_getu(inst,REG_LEN,0);
                                         if (reg[c]) reg[a] = reg[b];
                                         // printf("regC: %u, regA: %u, regB: %u\n", reg[c], reg[a], reg[b]);
                                         // printf("counter: %u, length: %u\n", counter, len);
                                         break;
-                        
+                                case INACTIVATE:
+                                        mem_unmap(reg[c]);
+                                        break;
                                 case OUT:
-
-                                c = Bitpack_getu(inst,REG_LEN,0);
                                         fputc(reg[c], stdout);
                                         break;
                                 case IN:
-
-                                c = Bitpack_getu(inst,REG_LEN,0);
                                         reg[c] = fgetc(stdin);
                                         break;
                                 case LOADP:
-
-                                b = Bitpack_getu(inst,REG_LEN,REG_LEN);
-                                c = Bitpack_getu(inst,REG_LEN,0);
                                         counter = reg[c]; 
-                                        if (reg[b]) {
+                                        if (reg[b] != 0) {
                                                 // printf("work1\n");
-                                                int size = (mem[reg[b]][0] +1 )* 4;
+                                                int size = mem[reg[b]][0] ;
                                                 // printf("work2\n");
                                                 free(mem[0]);
                                                 // printf("work3\n");
-                                                mem[0] = malloc(size);
+                                                mem[0] = calloc(size+1,4);
                                                 // printf("work4\n");
-                                                memcpy(mem[0], mem[reg[b]], size);
-                                                program = mem[0];
+                                                memcpy(mem[0], mem[reg[b]], (size+1)*4);
                                                 len = mem[0][0];
                                         }
                                         break;
                 // Add additional cases for other opcodes
-                              
+                                default:
+                                        // Handle unknown opcode
+                                        break;
                                 }
 
                 } else if (opcode == LV) {
-                        value = inst & VALUE_FLAG;
+                        value = Bitpack_getu(inst,VAL_LEN,0);
                         reg[Bitpack_getu(inst,REG_LEN,VAL_LEN)] = value;
 
                 } else {

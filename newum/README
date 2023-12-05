@@ -1,0 +1,179 @@
+# 1. Identifies you and your programming partner by name
+
+Sam Hu (khu04) and David Chen (zchen18)
+
+# 2. Acknowledges help you may have received from or collaborative work you may
+have undertaken with others
+
+
+We have recieved spec clarifications from various TAs; we have asked ChatGPT 
+to perform binary calculations. 
+
+# 3. Identifies what has been correctly implemented and what has not
+
+all features identified from the spec has been successfully implemented as far
+as the testing in comparison with reference um have shown
+
+
+# 4. Briefly enumerates any significant departures from your design
+
+On a large level, we followed our design. One thing noteworthy is the struct
+Machine, which contains a Mem_T (pointer) and a uint32_t array register.
+
+There were slight changes such as return types of functions (loadP) and name
+changes for functions. Also, asmall helper function was added to umemory that
+fetches the instructiondirectly from Mem_T.
+
+# 5. Succinctly describes the architecture of your system. Identify the modules
+# used, what *abstractions* they implement, what *secrets* they know, and how 
+# they relate to one another. Avoid narrative descriptions of the behavior of 
+# particular modules
+
+**Architecture**
+
+Machine (Machine struct)
+        memory (Mem_T)
+        register (uint32_t[])
+
+Emulator (not a struct)
+        operation interpreter (uinterpret, not struct)
+        operation executor (uexexute, not struct)
+
+Our system uses a Machine struct, which contains the memory as Seq_T and a 
+uint32_t array of 8 elements as the register.The SeqT holds a sequence of 
+UArray_Ts, each of which emulates a memory segment, where each element of a 
+UArray holds one single uint32_t, masked as a uintptr_t.
+
+The emulator program has interpretation and execution modules. Using the 
+machine, it takes in instructions and execute them one by one.
+
+We used three modules as well as a driver code, um.c.
+          um
+        /  | \
+       /   |   \
+      /    |    \
+     /     |      \
+    /      |       \
+ umem --  uexe    uinter
+
+
+**um.c:**
+driver code that links all files. Contains code to load the um file as well as 
+an execution cycle function to run the um. contains abstractions of the all 
+operations, knows and uses the machine struct from uexecute.
+**umemory.c:**
+Contains the implementation of Mem_T as well as all the implementation of 
+memory related operations. Creates the bulk of the foundations of the machine 
+itself.
+
+**uexecute.c:**
+Contains implementation of non-memory related operations and shared other 
+implementations with umemory.c, as well as the machine struct. It therefore 
+knows and utilizes Mem_T from umemory.
+
+**uinterpret.c:**
+The most isolated module, contains operations that parses uint32 instructions
+into command lines. Used only by um.c as part of the execution cycle.
+
+
+# 6. Explains how long it takes your UM to execute 50 million instructions, and
+# how you know
+
+Our UM takes 4.253 seconds to perform 50 million instructions. We first 
+recorded the number of instructions with a  ounter that wasran by 
+midmark.um as 85070521, and it took 7235428089 nanoseconds for our UM 
+to ran the whole program (using cputiming) Then we made a simple conversion. 
+
+# 7. Mentions each UM unit test (from UMTESTS) by name, explaining what each
+# one tests and how 
+
+Each test tests the function that its name contains, and all except for the two
+halt tests also implicitly tests load value.
+
+The tests, in this order, also uses features tested from previous tests.
+
+
+***extern void test_halt(Seq_T stream);***
+
+        simply halts the program.
+
+***extern void test_halt_verbose(Seq_T stream);***
+
+        put executions after halt, which should not run.
+
+***extern void test_out(Seq_T stream);***
+
+        Prints "Hello\n" to stdout char by char.
+
+***extern void test_add(Seq_T stream);***
+
+        adds 48 and 6, print the result as char to stdout.
+
+***extern void test_mult(Seq_T stream);***
+
+        tests multiplication in its standard cases and edge cases by checking 
+        output values. edge case refers to creating a 2^33 bit number that is
+        printable after modding by 2^32 and printing it.
+
+***extern void test_add_edge(Seq_T stream);***
+
+        similar to edge case of mult but using addition. tested after mult as 
+        it uses mult.
+
+***extern void test_div(Seq_T stream);***
+
+        divide a value and print the result to stdout.
+
+***extern void test_mov(Seq_T stream);***
+
+        tests both moving and not moving conditions for cmov, should print two 
+        different values as result of the successful&unsuccessful moves.
+
+***extern void test_nand(Seq_T stream);***
+
+        creates a printable value with nand being a critical step and prints it
+        to check.
+
+***extern void test_in(Seq_T stream);***
+
+        takes in "HELLO" and prints "HELLO\n"
+
+***extern void test_segl(Seq_T stream);***
+
+        loads value of halt instruction and divide it into value of a readable
+        character and print it to stdout.
+
+***extern void test_segs(Seq_T stream);***
+
+        manually creates a halt instruction and stores it on the last line of 
+        the program, which was supposed to add.
+
+***extern void test_map(Seq_T stream);***
+        
+        maps a new segment, store a value into it and print it by loading from 
+        that segment and line.
+
+***extern void test_unmap(Seq_T stream);***
+
+        maps and unmaps a segment, then calls halt. We did conceive a more 
+        solid test by accessing the segment after being unmapped. This is 
+        however categorized as invalid as it induces undefined behavior.
+
+***extern void test_loadp(Seq_T stream);***
+
+        test both cases (in-program jump and to-program jump)
+
+        the latter is tested by skipping a halt instruction mid-way, the latter
+        is tested by mapping a segment, fetching and storing that halt 
+        instruction into the new segment and jump to it.
+
+
+# 8. Time spent
+
+– Says approximately how many hours you have spent analyzing the assignment
+        -5 Hours
+– Says approximately how many hours you have spent preparing your design
+        -10 Hours
+– Says approximately how many hours you have spent solving the problems after 
+        your analysis
+        -20 Hours

@@ -56,36 +56,7 @@ void mem_free(Mem_T *mem)
  * segments are null
 */
 
-uint32_t mem_map(uint32_t length, Mem_T mem)
-{
-        if (length == 0){
-                if(mem->usize){
-                        return mem->unmapped[--mem->usize];
-                }else {
-                        return ++mem->size;
-                }
-        }
-        
-        /* initialize UArray */
 
-        uint32_t* Seg = calloc(length, 4);
-        assert(Seg);
-        uint32_t idx;
-        if (mem->usize) {
-                idx = mem->unmapped[--mem->usize];
-        } else {
-                
-                if (mem->size == mem->capacity) {
-                        mem->capacity *= 2;
-                        mem->seg_mem = realloc(mem->seg_mem, mem->capacity * 16); 
-                        assert(mem->seg_mem);
-                }
-                idx = mem->size++;
-        }
-        mem->seg_mem[idx].mem = Seg;
-        mem->seg_mem[idx].length = length;
-        return idx;
-}
 
 /* mem_unmap
  * Free a previously mapped memory segment
@@ -98,30 +69,7 @@ uint32_t mem_map(uint32_t length, Mem_T mem)
  *      - CRE if mem or seg_mem or unmapped is NULL
  *      - CRE if index is invalid
 */
-void mem_unmap(Mem_T mem, uint32_t idx)
-{
-        /* invalid inputs */
 
-
-
-        /* append the current index to the ummaped sequence */
-        if (mem->usize == mem->ucap) {
-                mem->ucap *= 2;
-                mem->unmapped = realloc(mem->unmapped,mem->ucap * sizeof(uint32_t));
-                assert(mem->unmapped);
-                
-        }
-        
-        /* replace the segment with NULL and free the segment */
-        mem->unmapped[mem->usize] = idx;
-        mem->usize++;
-        if(mem->seg_mem[idx].mem != NULL) {
-                free(mem->seg_mem[idx].mem);
-                mem->seg_mem[idx].mem = NULL;
-        }
-        
-        
-}
 
 
 /* mem_load
@@ -169,19 +117,7 @@ void mem_store(Mem_T mem, uint32_t memi, uint32_t segi, uint32_t value)
  * Expectation: 
  *      - CRE if mem or seg->mem is NULL
 */
-uint32_t mem_loadP(Mem_T mem, uint32_t idx)
-{
 
-        free(mem->seg_mem[0].mem);
-        mem->seg_mem[0].mem = NULL;
-
-        int length = mem->seg_mem[idx].length;
-        uint32_t *M =  malloc(sizeof(uint32_t)*length), *N = mem->seg_mem[idx].mem;
-        for (int i = 0; i < length; i++) {
-                M[i] = N[i];}
-        mem->seg_mem[0].mem  = M;
-        return length;
-}
 
 /* mem_inst
  * Fetch program instructions stored at $m[0]
